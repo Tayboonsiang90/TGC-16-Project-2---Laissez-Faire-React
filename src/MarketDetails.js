@@ -16,6 +16,21 @@ export default class Markets extends React.Component {
         globalVolume: 0,
         globalLiquidity: 0,
         displayMarket: 0,
+        buySellButton: "BUY",
+        yesNoButton: "YES",
+        amount: "Amount",
+    };
+
+    onEventString = (evt) => {
+        this.setState({
+            [evt.currentTarget.name]: evt.currentTarget.value,
+        });
+    };
+
+    onEventNumber = (evt) => {
+        this.setState({
+            [evt.currentTarget.name]: Number(evt.currentTarget.value),
+        });
     };
 
     renderPoliticianMarkets() {
@@ -29,17 +44,8 @@ export default class Markets extends React.Component {
 
             renderArray.push(
                 <React.Fragment key={politicianEntry.politician}>
-                    <button
-                        type="button"
-                        className="w-100 d-block btn btn-outline-dark"
-                        value={count}
-                        onClick={(evt) => {
-                            this.setState({
-                                displayMarket: Number(evt.currentTarget.value),
-                            });
-                        }}
-                    >
-                        <div className="d-flex align-items-center justify-content-between debug">
+                    <button type="button" className={"w-100 d-block btn btn-outline-dark" + (this.state.displayMarket === count ? " active" : "")} data-bs-toggle="button" value={count} name="displayMarket" onClick={this.onEventNumber}>
+                        <div className="d-flex align-items-center justify-content-between ">
                             <div className="text-start">
                                 <div>{politicianEntry.politician}</div>
                                 <div>
@@ -67,15 +73,30 @@ export default class Markets extends React.Component {
         let politicianDetails = this.state.politicians[this.state.displayMarket];
         return (
             <React.Fragment>
-                <div className="debug">
+                <div className="">
                     <div className="d-flex align-items-center justify-content-evenly">
-                        <div className="debug">BUY</div>
-                        <div className="debug">SELL</div>
+                        <button type="button" className={"btn btn-outline-success w-100" + (this.state.buySellButton === "BUY" ? " active" : "")} data-bs-toggle="button" name="buySellButton" value="BUY" onClick={this.onEventString}>
+                            BUY
+                        </button>
+                        <button type="button" className={"btn btn-outline-danger w-100" + (this.state.buySellButton === "SELL" ? " active" : "")} data-bs-toggle="button" name="buySellButton" value="SELL" onClick={this.onEventString}>
+                            SELL
+                        </button>
                     </div>
                     <div className="d-flex align-items-center justify-content-evenly">
-                        <div className="debug">YES</div>
-                        <div className="debug">NO</div>
+                        <button type="button" className={"btn btn-outline-success w-100" + (this.state.yesNoButton === "YES" ? " active" : "")} data-bs-toggle="button" name="yesNoButton" value="YES" onClick={this.onEventString}>
+                            YES
+                        </button>
+                        <button type="button" className={"btn btn-outline-danger w-100" + (this.state.yesNoButton === "NO" ? " active" : "")} data-bs-toggle="button" name="yesNoButton" value="NO" onClick={this.onEventString}>
+                            NO
+                        </button>
                     </div>
+                    <div className="d-flex align-items-center justify-content-evenly">
+                        <input className="form-control" type="search" placeholder="Amount" value={this.state.amount} name="amount" onChange={this.onEventNumber}></input>
+                        <button type="button" className="btn btn-dark" name="amount" value="1000" onClick={this.onEventNumber}>
+                            MAX
+                        </button>
+                    </div>
+                    <input type="range" className="form-range" step="0.1" min="0" max="5"></input>
                 </div>
             </React.Fragment>
         );
@@ -110,21 +131,27 @@ export default class Markets extends React.Component {
         return (
             <>
                 <div>
-                    <h1 className="debug">
+                    <h1 className="">
                         {this.state.position} of {this.state.country}
                     </h1>
                     <div className="d-flex">
-                        <div className="debug">
-                            <h5>Market Ends on</h5>
-                            <p>{new Date(this.state.timestampExpiry).toDateString()}</p>
+                        <div className="card">
+                            <div className="card-body text-center">
+                                <h5>Market Ends on</h5>
+                                <p>{new Date(this.state.timestampExpiry).toDateString()}</p>
+                            </div>
                         </div>
-                        <div className="debug">
-                            <h5>Volume to Date</h5>
-                            <p>${this.state.globalVolume}</p>
+                        <div className="card">
+                            <div className="card-body text-center">
+                                <h5>Volume to Date</h5>
+                                <p>${this.state.globalVolume}</p>
+                            </div>
                         </div>
-                        <div className="debug">
-                            <h5>Current Liquidity</h5>
-                            <p>${this.state.globalLiquidity}</p>
+                        <div className="card">
+                            <div className="card-body text-center">
+                                <h5>Current Liquidity</h5>
+                                <p>${this.state.globalLiquidity}</p>
+                            </div>
                         </div>
                     </div>
                     {this.renderPoliticianMarkets()}
