@@ -2,45 +2,120 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "http://127.0.0.1:8888";
 
 export default class Markets extends React.Component {
     state = {
         openMarkets: [
             {
-                _Id: 193,
-                politician: "Tay Boon Siang",
-                event: "elections",
-                country: "singapore",
-                description: "",
-                timestampCreated: 1647775063000,
-                timestampExpiry: 1742469438000,
-                yesBalance: 1000,
-                noBalance: 2000,
-                invariantK: 2000000,
-            },
-            {
-                _Id: 194,
-                politician: "Goh Jian De",
-                event: "elections",
-                country: "singapore",
-                description: "",
-                timestampCreated: 1647775063000,
-                timestampExpiry: 1742469438000,
-                yesBalance: 1000,
-                noBalance: 2000,
-                invariantK: 2000000,
+                _id: "62380bd95277817d6cf2411b",
+                position: "President",
+                country: "Ukraine",
+                description: "There will be an election held in 2025 to determine the future president of Ukraine.",
+                politicians: [
+                    {
+                        politician: "Goh Jian De",
+                        yes: 2000,
+                        no: 2000,
+                        volume: 0,
+                        invariantK: 4000000,
+                    },
+                    {
+                        politician: "Tay Boon Siang",
+                        yes: 2000,
+                        no: 2000,
+                        volume: 0,
+                        invariantK: 4000000,
+                    },
+                    {
+                        politician: "Volodmyr Zelensky",
+                        yes: 2000,
+                        no: 2000,
+                        volume: 0,
+                        invariantK: 4000000,
+                    },
+                ],
+                timestampCreated: 1647840217510,
+                timestampExpiry: 1649001600000,
             },
         ],
         resolvingMarkets: [{}, {}],
         closedMarkets: [{}, {}],
     };
 
-    async componentDidMount() {}
+    renderOpenMarkets() {
+        let renderArray = [];
+        for (let market of this.state.openMarkets) {
+            let globalVolume = 0;
+            let globalLiquidity = 0;
+            renderArray.push(
+                <React.Fragment key={market._id}>
+                    <div className="card">
+                        <div className="card-body">
+                            <div className="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <span>
+                                        <i className="fa-solid fa-check-to-slot"></i>
+                                    </span>
+                                    <h5 className="card-title">
+                                        Next {market.position} of {market.country}
+                                    </h5>
+                                    <h6 className="card-subtitle mb-2 text-muted">Expiry: {new Date(market.timestampExpiry).toDateString()}</h6>
+                                </div>
+                                <div>
+                                    <button type="button" className="btn btn-success">
+                                        Go to Market
+                                    </button>
+                                </div>
+                            </div>
+                            {(function () {
+                                let renderArray = [];
+                                for (let politicianEntry of market.politicians) {
+                                    let yesTokens = politicianEntry.yes;
+                                    let noTokens = politicianEntry.no;
+                                    let yesPrice = yesTokens / (yesTokens + noTokens);
+                                    let noPrice = noTokens / (yesTokens + noTokens);
+                                    globalVolume += politicianEntry.volume;
+                                    globalLiquidity += yesPrice * yesTokens * 2;
+                                    renderArray.push(
+                                        <div className="border-bottom d-flex align-items-center justify-content-between" key={politicianEntry.politician}>
+                                            <span className="card-text me-auto">{politicianEntry.politician}</span>
+                                            <span className="text-success me-2">Yes: {yesPrice * 100}¢</span>
+                                            <span className="text-danger">No: {noPrice * 100}¢</span>
+                                        </div>
+                                    );
+                                }
+                                return renderArray;
+                            })()}
+                            <div className="mt-2 d-flex align-items-center">
+                                <i className="fa-solid fa-chart-column text-muted tooltipHTML">
+                                    <span className="tooltiptextHTML">Volume</span>
+                                </i>
+                                <span className="card-text text-muted">&nbsp;${globalVolume}&nbsp;</span>
+                                <i className="fa-solid fa-water text-muted ms-3 tooltipHTML">
+                                    <span className="tooltiptextHTML">Liquidity</span>
+                                </i>
+                                <span className="card-text text-muted">&nbsp;${globalLiquidity}&nbsp;</span>
+                            </div>
+                        </div>
+                    </div>
+                </React.Fragment>
+            );
+        }
+        return renderArray;
+    }
+
+    async componentDidMount() {
+        let response = await axios.get(API_URL + "/open_markets");
+        this.setState({
+            openMarkets: response.data.openMarkets,
+        });
+    }
 
     render() {
         return (
             <>
+                {/* Carousel  */}
                 <div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
                     <div className="carousel-indicators">
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active"></button>
@@ -72,174 +147,11 @@ export default class Markets extends React.Component {
                         <span className="visually-hidden">Next</span>
                     </button>
                 </div>
-                <div className="card">
-                    <div className="card-body">
-                        <div className="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span>
-                                    <i className="fa-solid fa-check-to-slot"></i>
-                                </span>
-                                <h5 className="card-title">Next President of Ukraine</h5>
-                                <h6 className="card-subtitle mb-2 text-muted">Expiry: 14/05/2022</h6>
-                            </div>
-                            <div>
-                                <button type="button" className="btn btn-success">
-                                    Go to Market
-                                </button>
-                            </div>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Volodmyr Zelensky</span>
-                            <span className="text-success me-2">Yes: 10¢</span>
-                            <span className="text-danger">No: 90¢</span>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Valdmir Putin</span>
-                            <span className="text-success me-2">Yes: 49¢</span>
-                            <span className="text-danger">No: 51¢</span>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Goh Jian De</span>
-                            <span className="text-success me-2">Yes: 95¢</span>
-                            <span className="text-danger">No: &nbsp;&nbsp;5¢</span>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Tay Boon Siang</span>
-                            <span className="text-success me-2">Yes: 99¢</span>
-                            <span className="text-danger">No: &nbsp;&nbsp;1¢</span>
-                        </div>
-                        <div className="mt-2 d-flex align-items-center">
-                            <i className="fa-solid fa-chart-column text-muted"></i>
-                            <p className="card-text text-muted">&nbsp;$123,456</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="card">
-                    <div className="card-body">
-                        <div className="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span>
-                                    <i className="fa-solid fa-check-to-slot"></i>
-                                </span>
-                                <h5 className="card-title">Next President of Ukraine</h5>
-                                <h6 className="card-subtitle mb-2 text-muted">Expiry: 14/02/2022</h6>
-                            </div>
-                            <div>
-                                <button type="button" className="btn btn-secondary">
-                                    Market Resolving
-                                </button>
-                            </div>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Volodmyr Zelensky</span>
-                            <span className="text-success me-2">Yes: 10¢</span>
-                            <span className="text-danger">No: 90¢</span>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Valdmir Putin</span>
-                            <span className="text-success me-2">Yes: 49¢</span>
-                            <span className="text-danger">No: 51¢</span>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Goh Jian De</span>
-                            <span className="text-success me-2">Yes: 95¢</span>
-                            <span className="text-danger">No: &nbsp;&nbsp;5¢</span>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Tay Boon Siang</span>
-                            <span className="text-success me-2">Yes: 99¢</span>
-                            <span className="text-danger">No: &nbsp;&nbsp;1¢</span>
-                        </div>
-                        <div className="mt-2 d-flex align-items-center">
-                            <i className="fa-solid fa-chart-column text-muted"></i>
-                            <p className="card-text text-muted">&nbsp;$123,456</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="card">
-                    <div className="card-body">
-                        <div className="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span>
-                                    <i className="fa-solid fa-check-to-slot"></i>
-                                </span>
-                                <h5 className="card-title">Next President of Ukraine</h5>
-                                <h6 className="card-subtitle mb-2 text-muted">Expiry: 14/01/2022</h6>
-                            </div>
-                            <div>
-                                <button type="button" className="btn btn-danger">
-                                    Market Closed
-                                </button>
-                            </div>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Volodmyr Zelensky</span>
-                            <span className="text-success me-2">Yes: 10¢</span>
-                            <span className="text-danger">No: 90¢</span>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Valdmir Putin</span>
-                            <span className="text-success me-2">Yes: 49¢</span>
-                            <span className="text-danger">No: 51¢</span>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Goh Jian De</span>
-                            <span className="text-success me-2">Yes: 95¢</span>
-                            <span className="text-danger">No: &nbsp;&nbsp;5¢</span>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Tay Boon Siang</span>
-                            <span className="text-success me-2">Yes: 99¢</span>
-                            <span className="text-danger">No: &nbsp;&nbsp;1¢</span>
-                        </div>
-                        <div className="mt-2 d-flex align-items-center">
-                            <i className="fa-solid fa-chart-column text-muted"></i>
-                            <p className="card-text text-muted">&nbsp;$123,456</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="card">
-                    <div className="card-body">
-                        <div className="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span>
-                                    <i className="fa-solid fa-check-to-slot"></i>
-                                </span>
-                                <h5 className="card-title">Add your own market here</h5>
-                                <h6 className="card-subtitle mb-2 text-muted">Expiry: 14/04/2022</h6>
-                            </div>
-                            <div>
-                                <button type="button" className="btn btn-success">
-                                    Go to Market
-                                </button>
-                            </div>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Volodmyr Zelensky</span>
-                            <span className="text-success me-2">Yes: 10¢</span>
-                            <span className="text-danger">No: 90¢</span>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Valdmir Putin</span>
-                            <span className="text-success me-2">Yes: 49¢</span>
-                            <span className="text-danger">No: 51¢</span>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Goh Jian De</span>
-                            <span className="text-success me-2">Yes: 95¢</span>
-                            <span className="text-danger">No: &nbsp;&nbsp;5¢</span>
-                        </div>
-                        <div className="border-bottom d-flex align-items-center justify-content-between">
-                            <span className="card-text me-auto">Tay Boon Siang</span>
-                            <span className="text-success me-2">Yes: 99¢</span>
-                            <span className="text-danger">No: &nbsp;&nbsp;1¢</span>
-                        </div>
-                        <div className="mt-2 d-flex align-items-center">
-                            <i className="fa-solid fa-chart-column text-muted"></i>
-                            <p className="card-text text-muted">&nbsp;$123,456</p>
-                        </div>
-                    </div>
-                </div>
+
+                {/* Search Engine */}
+
+                {/* Cards  */}
+                {this.renderOpenMarkets()}
             </>
         );
     }

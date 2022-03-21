@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "http://127.0.0.1:8888";
 
 export default class Signup extends React.Component {
     state = {
@@ -68,9 +68,9 @@ export default class Signup extends React.Component {
     };
 
     async componentDidMount() {
-        let countryList = await axios.get(API_URL + "/country");
+        let response = await axios.get(API_URL + "/country");
         this.setState({
-            countryList: countryList.data.countryArray,
+            countryList: response.data.countryArray,
         });
     }
 
