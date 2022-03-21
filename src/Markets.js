@@ -6,39 +6,7 @@ const API_URL = "http://127.0.0.1:8888";
 
 export default class Markets extends React.Component {
     state = {
-        openMarkets: [
-            {
-                _id: "62380bd95277817d6cf2411b",
-                position: "President",
-                country: "Ukraine",
-                description: "There will be an election held in 2025 to determine the future president of Ukraine.",
-                politicians: [
-                    {
-                        politician: "Goh Jian De",
-                        yes: 2000,
-                        no: 2000,
-                        volume: 0,
-                        invariantK: 4000000,
-                    },
-                    {
-                        politician: "Tay Boon Siang",
-                        yes: 2000,
-                        no: 2000,
-                        volume: 0,
-                        invariantK: 4000000,
-                    },
-                    {
-                        politician: "Volodmyr Zelensky",
-                        yes: 2000,
-                        no: 2000,
-                        volume: 0,
-                        invariantK: 4000000,
-                    },
-                ],
-                timestampCreated: 1647840217510,
-                timestampExpiry: 1649001600000,
-            },
-        ],
+        openMarkets: [],
         resolvingMarkets: [{}, {}],
         closedMarkets: [{}, {}],
     };
@@ -149,6 +117,92 @@ export default class Markets extends React.Component {
                 </div>
 
                 {/* Search Engine */}
+                <div className="mt-4 text-center">
+                    <h1>Prediction Markets</h1>
+                </div>
+                <div className="d-flex justify-content-center mt-4 mb-4">
+                    <div className="btn-group">
+                        <button className="btn btn-secondary d-flex align-items-center" type="button" id="dropdownMenuClickableOutside" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                            <i className="fa-solid fa-filter"></i> <span>&nbsp;Filter</span>
+                        </button>
+                        <ul className="dropdown-menu">
+                            <li>
+                                <span className="dropdown-item disabled">Sort By</span>
+                            </li>
+                            <li>
+                                <div className="form-check">
+                                    <input className="form-check-input ms-1" type="radio" name="sortOptions" id="sortOptions1"></input>
+                                    <label className="form-check-label ms-1" htmlFor="sortOptions1">
+                                        Expiry Date
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="form-check">
+                                    <input className="form-check-input ms-1" type="radio" name="sortOptions" id="sortOptions2"></input>
+                                    <label className="form-check-label ms-1" htmlFor="sortOptions2">
+                                        Volume
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="form-check">
+                                    <input className="form-check-input ms-1" type="radio" name="sortOptions" id="sortOptions3"></input>
+                                    <label className="form-check-label ms-1" htmlFor="sortOptions3">
+                                        Liquidity
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <span className="dropdown-item disabled">Ascending/Descending</span>
+                            </li>
+                            <li>
+                                <div className="form-check">
+                                    <input className="form-check-input ms-1" type="radio" name="ascendDescend" id="ascendDescend1"></input>
+                                    <label className="form-check-label ms-1" htmlFor="ascendDescend1">
+                                        Descending
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="form-check">
+                                    <input className="form-check-input ms-1" type="radio" name="ascendDescend" id="ascendDescend2"></input>
+                                    <label className="form-check-label ms-1" htmlFor="ascendDescend2">
+                                        Ascending
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <span className="dropdown-item disabled">Show/Hide</span>
+                            </li>
+                            <li>
+                                <div className="form-check">
+                                    <input className="form-check-input ms-1" type="checkbox" value="" id="marketType"></input>
+                                    <label className="form-check-label ms-1" htmlFor="marketType">
+                                        Open Markets
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="form-check">
+                                    <input className="form-check-input ms-1" type="checkbox" value="" id="marketType"></input>
+                                    <label className="form-check-label ms-1" htmlFor="marketType">
+                                        Resolving Markets
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="form-check">
+                                    <input className="form-check-input ms-1" type="checkbox" value="" id="marketType"></input>
+                                    <label className="form-check-label ms-1" htmlFor="marketType">
+                                        Closed Markets
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <input className="form-control" type="search" placeholder="Search"></input>
+                </div>
 
                 {/* Cards  */}
                 {this.renderOpenMarkets()}

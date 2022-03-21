@@ -5,10 +5,11 @@ import React from "react";
 import Navbar from "./Navbar";
 import Signup from "./Signup";
 import Markets from "./Markets";
+import MarketDetails from "./MarketDetails";
 
 class App extends React.Component {
     state = {
-        display: "Markets",
+        display: "MarketDetails",
     };
 
     //Signup, Markets
@@ -25,6 +26,12 @@ class App extends React.Component {
                     <Signup />
                 </React.Fragment>
             );
+        } else if (this.state.display === "MarketDetails") {
+            return (
+                <React.Fragment>
+                    <MarketDetails />
+                </React.Fragment>
+            );
         }
     }
 
@@ -32,7 +39,7 @@ class App extends React.Component {
         return (
             <>
                 <Navbar />
-                {this.setDisplay()}
+                <div className="container">{this.setDisplay()}</div>
             </>
         );
     }
