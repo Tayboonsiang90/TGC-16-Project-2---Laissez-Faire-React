@@ -45,13 +45,13 @@ export default class Signup extends React.Component {
         return renderArray;
     }
 
-    registerButton = () => {
+    registerButton = async () => {
         if (this.state.password !== this.state.retypePassword) {
             this.setState({
                 warningMessage: "Your passwords do not match. Please try again.",
             });
         } else {
-            axios
+            await axios
                 .post(API_URL + "/signup", {
                     email: this.state.email,
                     password: this.state.password,
@@ -64,6 +64,18 @@ export default class Signup extends React.Component {
                         warningMessage: error.response.data.message,
                     });
                 });
+            let response = await axios.get(API_URL + "/login", {
+                params: {
+                    email: this.state.email,
+                    password: this.state.password,
+                },
+            });
+            //store in cookies
+            document.cookie = JSON.stringify(response.data.message);
+            //update parent state variables
+            this.props.updateParentState("userSessionDetails", response.data.message);
+            //redirect to markets
+            this.props.updateParentDisplay("Markets");
         }
     };
 
@@ -138,7 +150,14 @@ export default class Signup extends React.Component {
 
                                             <p className="text-center text-muted mt-5 mb-0">
                                                 Have already an account?&nbsp;
-                                                <a href="#!" className="fw-bold text-body">
+                                                <a
+                                                    href="/#"
+                                                    className="fw-bold text-body"
+                                                    onClick={() => {
+                                                        //redirect to markets
+                                                        this.props.updateParentDisplay("Login");
+                                                    }}
+                                                >
                                                     <u>Login here</u>
                                                 </a>
                                             </p>

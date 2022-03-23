@@ -44,7 +44,7 @@ export default class Markets extends React.Component {
 
             renderArray.push(
                 <React.Fragment key={politicianEntry.politician}>
-                    <button type="button" className={"w-100 d-block btn btn-outline-dark" + (this.state.displayMarket === count ? " active" : "")} data-bs-toggle="button" value={count} name="displayMarket" onClick={this.onEventNumber}>
+                    <button type="button" className={"shadow-none w-100 d-block btn btn-outline-dark" + (this.state.displayMarket === count ? " active" : "")} data-bs-toggle="button" value={count} name="displayMarket" onClick={this.onEventNumber}>
                         <div className="d-flex align-items-center justify-content-between ">
                             <div className="text-start">
                                 <div>{politicianEntry.politician}</div>
@@ -75,24 +75,24 @@ export default class Markets extends React.Component {
             <React.Fragment>
                 <div className="">
                     <div className="d-flex align-items-center justify-content-evenly">
-                        <button type="button" className={"btn btn-outline-success w-100" + (this.state.buySellButton === "BUY" ? " active" : "")} data-bs-toggle="button" name="buySellButton" value="BUY" onClick={this.onEventString}>
+                        <button type="button" className={"shadow-none btn btn-outline-success w-100" + (this.state.buySellButton === "BUY" ? " active" : "")} data-bs-toggle="button" name="buySellButton" value="BUY" onClick={this.onEventString}>
                             BUY
                         </button>
-                        <button type="button" className={"btn btn-outline-danger w-100" + (this.state.buySellButton === "SELL" ? " active" : "")} data-bs-toggle="button" name="buySellButton" value="SELL" onClick={this.onEventString}>
+                        <button type="button" className={"shadow-none btn btn-outline-danger w-100" + (this.state.buySellButton === "SELL" ? " active" : "")} data-bs-toggle="button" name="buySellButton" value="SELL" onClick={this.onEventString}>
                             SELL
                         </button>
                     </div>
                     <div className="d-flex align-items-center justify-content-evenly">
-                        <button type="button" className={"btn btn-outline-success w-100" + (this.state.yesNoButton === "YES" ? " active" : "")} data-bs-toggle="button" name="yesNoButton" value="YES" onClick={this.onEventString}>
+                        <button type="button" className={"shadow-none btn btn-outline-success w-100" + (this.state.yesNoButton === "YES" ? " active" : "")} data-bs-toggle="button" name="yesNoButton" value="YES" onClick={this.onEventString}>
                             YES
                         </button>
-                        <button type="button" className={"btn btn-outline-danger w-100" + (this.state.yesNoButton === "NO" ? " active" : "")} data-bs-toggle="button" name="yesNoButton" value="NO" onClick={this.onEventString}>
+                        <button type="button" className={"shadow-none btn btn-outline-danger w-100" + (this.state.yesNoButton === "NO" ? " active" : "")} data-bs-toggle="button" name="yesNoButton" value="NO" onClick={this.onEventString}>
                             NO
                         </button>
                     </div>
                     <div className="d-flex align-items-center justify-content-evenly">
                         <input className="form-control" type="search" placeholder="Amount" value={this.state.amount} name="amount" onChange={this.onEventNumber}></input>
-                        <button type="button" className="btn btn-dark" name="amount" value="1000" onClick={this.onEventNumber}>
+                        <button type="button" className="shadow-none btn btn-dark" name="amount" value="1000" onClick={this.onEventNumber}>
                             MAX
                         </button>
                     </div>

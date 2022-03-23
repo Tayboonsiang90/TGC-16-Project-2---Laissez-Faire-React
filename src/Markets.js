@@ -122,7 +122,7 @@ export default class Markets extends React.Component {
                 </div>
                 <div className="d-flex justify-content-center mt-4 mb-4">
                     <div className="btn-group">
-                        <button className="btn btn-secondary d-flex align-items-center" type="button" id="dropdownMenuClickableOutside" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                        <button className="shadow-none btn btn-secondary d-flex align-items-center" type="button" id="dropdownMenuClickableOutside" data-bs-toggle="dropdown" data-bs-auto-close="outside">
                             <i className="fa-solid fa-filter"></i> <span>&nbsp;Filter</span>
                         </button>
                         <ul className="dropdown-menu">
@@ -131,7 +131,7 @@ export default class Markets extends React.Component {
                             </li>
                             <li>
                                 <div className="form-check">
-                                    <input className="form-check-input ms-1" type="radio" name="sortOptions" id="sortOptions1"></input>
+                                    <input className="shadow-none form-check-input ms-1" type="radio" name="sortOptions" id="sortOptions1"></input>
                                     <label className="form-check-label ms-1" htmlFor="sortOptions1">
                                         Expiry Date
                                     </label>
@@ -139,7 +139,7 @@ export default class Markets extends React.Component {
                             </li>
                             <li>
                                 <div className="form-check">
-                                    <input className="form-check-input ms-1" type="radio" name="sortOptions" id="sortOptions2"></input>
+                                    <input className="shadow-none form-check-input ms-1" type="radio" name="sortOptions" id="sortOptions2"></input>
                                     <label className="form-check-label ms-1" htmlFor="sortOptions2">
                                         Volume
                                     </label>
@@ -147,7 +147,7 @@ export default class Markets extends React.Component {
                             </li>
                             <li>
                                 <div className="form-check">
-                                    <input className="form-check-input ms-1" type="radio" name="sortOptions" id="sortOptions3"></input>
+                                    <input className="shadow-none form-check-input ms-1" type="radio" name="sortOptions" id="sortOptions3"></input>
                                     <label className="form-check-label ms-1" htmlFor="sortOptions3">
                                         Liquidity
                                     </label>
@@ -158,7 +158,7 @@ export default class Markets extends React.Component {
                             </li>
                             <li>
                                 <div className="form-check">
-                                    <input className="form-check-input ms-1" type="radio" name="ascendDescend" id="ascendDescend1"></input>
+                                    <input className="shadow-none form-check-input ms-1" type="radio" name="ascendDescend" id="ascendDescend1"></input>
                                     <label className="form-check-label ms-1" htmlFor="ascendDescend1">
                                         Descending
                                     </label>
@@ -166,7 +166,7 @@ export default class Markets extends React.Component {
                             </li>
                             <li>
                                 <div className="form-check">
-                                    <input className="form-check-input ms-1" type="radio" name="ascendDescend" id="ascendDescend2"></input>
+                                    <input className="shadow-none form-check-input ms-1" type="radio" name="ascendDescend" id="ascendDescend2"></input>
                                     <label className="form-check-label ms-1" htmlFor="ascendDescend2">
                                         Ascending
                                     </label>
@@ -177,7 +177,7 @@ export default class Markets extends React.Component {
                             </li>
                             <li>
                                 <div className="form-check">
-                                    <input className="form-check-input ms-1" type="checkbox" value="" id="marketType"></input>
+                                    <input className="shadow-none form-check-input ms-1" type="checkbox" value="" id="marketType"></input>
                                     <label className="form-check-label ms-1" htmlFor="marketType">
                                         Open Markets
                                     </label>
@@ -185,7 +185,7 @@ export default class Markets extends React.Component {
                             </li>
                             <li>
                                 <div className="form-check">
-                                    <input className="form-check-input ms-1" type="checkbox" value="" id="marketType"></input>
+                                    <input className="shadow-none form-check-input ms-1" type="checkbox" value="" id="marketType"></input>
                                     <label className="form-check-label ms-1" htmlFor="marketType">
                                         Resolving Markets
                                     </label>
@@ -193,7 +193,7 @@ export default class Markets extends React.Component {
                             </li>
                             <li>
                                 <div className="form-check">
-                                    <input className="form-check-input ms-1" type="checkbox" value="" id="marketType"></input>
+                                    <input className="shadow-none form-check-input ms-1" type="checkbox" value="" id="marketType"></input>
                                     <label className="form-check-label ms-1" htmlFor="marketType">
                                         Closed Markets
                                     </label>
@@ -201,7 +201,7 @@ export default class Markets extends React.Component {
                             </li>
                         </ul>
                     </div>
-                    <input className="form-control" type="search" placeholder="Search"></input>
+                    <input className="form-control shadow-none" type="search" placeholder="Search"></input>
                 </div>
 
                 {/* Cards  */}
