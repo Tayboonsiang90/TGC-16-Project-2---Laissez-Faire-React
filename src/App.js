@@ -11,6 +11,9 @@ import Leaderboard from "./Leaderboard";
 import Dashboard from "./Dashboard";
 import NewMarket from "./NewMarket";
 import Portfolio from "./Portfolio";
+import axios from "axios";
+
+const API_URL = "http://127.0.0.1:8888";
 
 class App extends React.Component {
     state = {
@@ -25,6 +28,7 @@ class App extends React.Component {
             password: "",
             timestamp: 0,
         },
+        market_id: "",
     };
 
     updateParentState = (key, value) => {
@@ -37,6 +41,16 @@ class App extends React.Component {
         this.setState({
             display: value,
         });
+    };
+
+    updateSessionState = async () => {
+        if (this.state.userSessionDetails._id) {
+            let userDetails = await axios.get(API_URL + "/login/" + this.state.userSessionDetails._id);
+            this.setState({
+                userSessionDetails: userDetails.data.message,
+            });
+            document.cookie = JSON.stringify(userDetails.data.message);
+        }
     };
 
     async componentDidMount() {
@@ -66,7 +80,7 @@ class App extends React.Component {
         if (this.state.display === "Markets") {
             return (
                 <React.Fragment>
-                    <Markets updateParentDisplay={this.updateParentDisplay} />
+                    <Markets updateParentDisplay={this.updateParentDisplay} updateParentState={this.updateParentState} />
                 </React.Fragment>
             );
         } else if (this.state.display === "Signup") {
@@ -78,7 +92,7 @@ class App extends React.Component {
         } else if (this.state.display === "MarketDetails") {
             return (
                 <React.Fragment>
-                    <MarketDetails updateParentDisplay={this.updateParentDisplay} />
+                    <MarketDetails userSessionDetails={this.state.userSessionDetails} updateParentDisplay={this.updateParentDisplay} market_id={this.state.market_id} />
                 </React.Fragment>
             );
         } else if (this.state.display === "Login") {
@@ -96,7 +110,7 @@ class App extends React.Component {
         } else if (this.state.display === "Dashboard") {
             return (
                 <React.Fragment>
-                    <Dashboard userSessionDetails={this.state.userSessionDetails} updateParentDisplay={this.updateParentDisplay} />
+                    <Dashboard updateSessionState={this.updateSessionState} userSessionDetails={this.state.userSessionDetails} updateParentDisplay={this.updateParentDisplay} />
                 </React.Fragment>
             );
         } else if (this.state.display === "NewMarket") {
@@ -111,7 +125,7 @@ class App extends React.Component {
                     <Portfolio updateParentDisplay={this.updateParentDisplay} />
                 </React.Fragment>
             );
-        } 
+        }
     }
 
     render() {

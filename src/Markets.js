@@ -31,7 +31,14 @@ export default class Markets extends React.Component {
                                     <h6 className="card-subtitle mb-2 text-muted">Expiry: {new Date(market.timestampExpiry).toDateString()}</h6>
                                 </div>
                                 <div>
-                                    <button type="button" className="btn btn-success">
+                                    <button
+                                        type="button"
+                                        className="btn btn-success"
+                                        onClick={() => {
+                                            this.props.updateParentDisplay("MarketDetails");
+                                            this.props.updateParentState("market_id", market._id);
+                                        }}
+                                    >
                                         Go to Market
                                     </button>
                                 </div>
@@ -48,8 +55,8 @@ export default class Markets extends React.Component {
                                     renderArray.push(
                                         <div className="border-bottom d-flex align-items-center justify-content-between" key={politicianEntry.politician}>
                                             <span className="card-text me-auto">{politicianEntry.politician}</span>
-                                            <span className="text-success me-2">Yes: {yesPrice * 100}¢</span>
-                                            <span className="text-danger">No: {noPrice * 100}¢</span>
+                                            <span className="text-success me-2">Yes: {(yesPrice * 100).toFixed(0)}¢</span>
+                                            <span className="text-danger">No: {(noPrice * 100).toFixed(0)}¢</span>
                                         </div>
                                     );
                                 }
@@ -59,11 +66,11 @@ export default class Markets extends React.Component {
                                 <i className="fa-solid fa-chart-column text-muted tooltipHTML">
                                     <span className="tooltiptextHTML">Volume</span>
                                 </i>
-                                <span className="card-text text-muted">&nbsp;${globalVolume}&nbsp;</span>
+                                <span className="card-text text-muted">&nbsp;${globalVolume.toFixed(2)}&nbsp;</span>
                                 <i className="fa-solid fa-water text-muted ms-3 tooltipHTML">
                                     <span className="tooltiptextHTML">Liquidity</span>
                                 </i>
-                                <span className="card-text text-muted">&nbsp;${globalLiquidity}&nbsp;</span>
+                                <span className="card-text text-muted">&nbsp;${globalLiquidity.toFixed(2)}&nbsp;</span>
                             </div>
                         </div>
                     </div>

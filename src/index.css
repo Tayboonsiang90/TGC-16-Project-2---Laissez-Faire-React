@@ -34,3 +34,17 @@
 .tooltipHTML:hover .tooltiptextHTML {
     visibility: visible;
 }
+
+/* Fanciest Font*/
+.fancy {
+    font-family: "Roboto", sans-serif;
+}
+
+nav > div > i:hover {
+    transform: scale(1.4);
+    border-bottom: 0.1px solid blue;
+}
+
+nav > div > i {
+    cursor: pointer;
+}

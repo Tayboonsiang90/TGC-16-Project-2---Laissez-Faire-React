@@ -96,7 +96,7 @@ export default class Navbar extends React.Component {
         return (
             <nav className="navbar navbar-expand-lg navbar-light bg-light">
                 <div className="container-fluid">
-                    <i className="fa-solid fa-people-group"></i>
+                    <i className="fa-solid fa-people-group navbar__icon"></i>
                     <div className="navbar-brand">&nbsp; Laissez Faire</div>
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
                         <span className="navbar-toggler-icon"></span>
