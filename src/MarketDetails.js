@@ -18,6 +18,8 @@ export default class Markets extends React.Component {
         buySellButton: "BUY",
         yesNoButton: "YES",
         amount: 0,
+        yesBalance: 0,
+        noBalance: 0,
     };
 
     onEventString = (evt) => {
@@ -32,18 +34,38 @@ export default class Markets extends React.Component {
         });
     };
 
+    updateYesNoBalances = async (evt) => {
+        let market_id = this.state.politicians[evt.currentTarget.value].market_id;
+        let response = await axios.get(API_URL + "/balances/" + market_id + "/" + this.props.userSessionDetails._id);
+
+        this.setState({
+            yesBalance: response.data.balances.yes,
+            noBalance: response.data.balances.no,
+        });
+    };
+
     renderPoliticianMarkets() {
         let renderArray = [];
         let count = 0;
         for (let politicianEntry of this.state.politicians) {
             let yesTokens = politicianEntry.yes;
             let noTokens = politicianEntry.no;
-            let yesPrice = yesTokens / (yesTokens + noTokens);
-            let noPrice = noTokens / (yesTokens + noTokens);
+            let yesPrice = noTokens / (yesTokens + noTokens);
+            let noPrice = yesTokens / (yesTokens + noTokens);
 
             renderArray.push(
                 <React.Fragment key={politicianEntry.politician}>
-                    <button type="button" className={"shadow-none w-100 d-block btn btn-outline-dark" + (this.state.displayMarket === count ? " active" : "")} data-bs-toggle="button" value={count} name="displayMarket" onClick={this.onEventNumber}>
+                    <button
+                        type="button"
+                        className={"shadow-none w-100 d-block btn btn-outline-dark" + (this.state.displayMarket === count ? " active" : "")}
+                        data-bs-toggle="button"
+                        value={count}
+                        name="displayMarket"
+                        onClick={(e) => {
+                            this.onEventNumber(e);
+                            this.updateYesNoBalances(e);
+                        }}
+                    >
                         <div className="d-flex align-items-center justify-content-between ">
                             <div className="text-start">
                                 <div>{politicianEntry.politician}</div>
@@ -90,58 +112,67 @@ export default class Markets extends React.Component {
                             NO
                         </button>
                     </div>
-                    <div className="mt-4 text-end text-muted"> ${this.props.userSessionDetails.USD.toFixed(2)} : Available Balance </div>
+                    <div className="mt-4 text-end text-muted">
+                        {this.state.buySellButton === "BUY" ? "$" : ""}
+                        {this.state.buySellButton === "BUY" ? this.props.userSessionDetails.USD.toFixed(2) : this.state.yesNoButton === "YES" ? this.state.yesBalance : this.state.noBalance} : Available Balance
+                    </div>
                     <div className="d-flex align-items-center justify-content-evenly">
                         {this.state.buySellButton === "BUY" ? <i className="fa-solid fa-dollar-sign me-3"></i> : <i className="fa-solid fa-coins me-3"></i>}
                         <input autoComplete="off" className="form-control shadow-none" type="number" placeholder="Amount" value={this.state.amount} name="amount" onChange={this.onEventNumber}></input>
-                        <button type="button" className="shadow-none btn btn-dark" name="amount" value={this.props.userSessionDetails.USD} onClick={this.onEventNumber}>
+                        <button type="button" className="shadow-none btn btn-dark" name="amount" value={this.state.buySellButton === "BUY" ? this.props.userSessionDetails.USD : this.state.yesNoButton === "YES" ? this.state.yesBalance : this.state.noBalance} onClick={this.onEventNumber}>
                             MAX
                         </button>
                     </div>
+                    <input
+                        type="range"
+                        className="mt-2 form-range"
+                        step="0.05"
+                        min="0"
+                        max={this.state.buySellButton === "BUY" ? this.props.userSessionDetails.USD : this.state.yesNoButton === "YES" ? this.state.yesBalance : this.state.noBalance}
+                        value={this.state.amount}
+                        name="amount"
+                        onChange={this.onEventNumber}
+                    ></input>
+
                     {this.transactionDetails()}
-                    <button type="button" className="shadow-none btn btn-secondary w-100 mt-3" name="submitButton" onClick={this.submitButton} disabled={this.state.amount < 0 || this.state.amount > this.props.userSessionDetails.USD} data-bs-toggle="modal" data-bs-target="#withdrawModal">
+                    <button
+                        type="button"
+                        className="shadow-none btn btn-secondary w-100 mt-3"
+                        name="submitButton"
+                        onClick={this.submitButton}
+                        disabled={this.state.amount <= 0 || this.state.amount > (this.state.buySellButton === "BUY" ? this.props.userSessionDetails.USD : this.state.yesNoButton === "YES" ? this.state.yesBalance : this.state.noBalance)}
+                        data-bs-toggle="modal"
+                        data-bs-target="#withdrawModal"
+                    >
                         SUBMIT
                     </button>
-                    {/* <!-- Withdraw Modal --> */}
-                    <div className="modal fade" id="withdrawModal" tabIndex="-1">
-                        <div className="modal-dialog">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h5 className="modal-title">WITHDRAWAL</h5>
-                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                {/* confirmation modal  */}
+                <div className="modal fade" id="withdrawModal" tabIndex="-1">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Please check your transactions details</h5>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                                    <strong>Your transaction has been successfully processed.</strong>
+                                    <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
                                 </div>
-                                <div className="modal-body">
-                                    <div className="alert alert-success alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.withdrawSuccessFlag ? "block" : "none" }}>
-                                        <strong>Your withdrawal has been successfully processed.</strong>
-                                        <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
-                                    </div>
-                                    <div className="alert alert-danger alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.withdrawalMessage ? "block" : "none" }}>
-                                        <strong>{this.state.withdrawalMessage}</strong>
-                                        <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
-                                    </div>
-                                    <form>
-                                        <div className="mb-3">
-                                            <label htmlFor="withdrawAmount" className="form-label">
-                                                Amount
-                                            </label>
-                                            <div className="d-flex align-items-center">
-                                                <i className="fa-solid fa-dollar-sign me-3"></i>
-                                                <input type="number" className="form-control" id="withdrawAmount" name="withdrawAmount" value={this.state.withdrawAmount} onChange={this.updateState}></input>
-                                            </div>
-                                            <div id="emailHelp" className="form-text">
-                                                Withdrawals will happen instantly thanks to our latest quantum transaction technology.
-                                            </div>
-                                        </div>
-                                    </form>
+                                <div className="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                                    <strong>Internal Error. </strong>
+                                    <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
                                 </div>
-                                <div className="modal-footer">
-                                    <button type="button" onClick={this.withdrawButton} className="btn btn-success">
-                                        Submit Withdrawal
-                                    </button>
-                                    <button type="button" className="btn btn-danger" data-bs-dismiss="modal">
-                                        Exit
-                                    </button>
-                                </div>
+                                {this.transactionDetails()}
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" onClick={this.withdrawButton} className="btn btn-success">
+                                    Submit Transaction
+                                </button>
+                                <button type="button" className="btn btn-danger" data-bs-dismiss="modal">
+                                    Exit
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -150,28 +181,65 @@ export default class Markets extends React.Component {
         );
     }
 
+    // Transaction Details
     transactionDetails = () => {
-        return (
-            <>
-                <input type="range" className="mt-2 form-range" step="0.05" min="0" max={this.props.userSessionDetails.USD} value={this.state.amount} name="amount" onChange={this.onEventNumber}></input>
-                <span className="d-block p-2">You will pay ${this.state.amount.toFixed(2) || 0}.</span>
-                <span className="d-block p-2">
-                    You will buy {this.computeTokensFromDollar().toFixed(2)} {this.state.yesNoButton} tokens.
-                </span>
-                <span className="d-block p-2">The price paid per token is {Number(((this.state.amount * 100) / this.computeTokensFromDollar()).toFixed(0)) || 0}¢.</span>
-                <span className="d-block p-2">Transaction Slippage: {this.computeSlippageFromDollar().toFixed(2)}%</span>
-                <span className="d-block p-2">
-                    Winnings if {this.state.yesNoButton === "YES" ? "NO" : "YES"} outcome is true: ${(this.computeTokensFromDollar().toFixed(2) - this.state.amount).toFixed(2)}
-                </span>
-                <span className="d-block p-2">
-                    ROI if {this.state.yesNoButton === "YES" ? "NO" : "YES"} outcome is true: {(((this.computeTokensFromDollar().toFixed(2) - this.state.amount) * 100) / this.state.amount || 0).toFixed(2)}%.
-                </span>
-                <span className="d-block p-2">New price of YES after your transaction {this.state.yesNoButton === "YES" ? (100 - this.computeNewPriceFromDollar() * 100).toFixed(0) : (this.computeNewPriceFromDollar() * 100).toFixed(0)}¢.</span>
-                <span className="d-block p-2">New price of NO after your transaction {this.state.yesNoButton === "YES" ? (this.computeNewPriceFromDollar() * 100).toFixed(0) : (100 - this.computeNewPriceFromDollar() * 100).toFixed(0)}¢.</span>
-            </>
-        );
+        if (this.state.buySellButton === "BUY") {
+            return (
+                <>
+                    <span className="d-block p-2">You will pay ${this.state.amount.toFixed(2) || 0}.</span>
+                    <span className="d-block p-2">
+                        You will buy {this.computeTokensFromDollar().toFixed(2)} {this.state.yesNoButton} tokens.
+                    </span>
+                    <span className="d-block p-2">The price paid per token is {Number(((this.state.amount * 100) / this.computeTokensFromDollar()).toFixed(0)) || 0}¢.</span>
+                    <span className="d-block p-2">Transaction Slippage: {Math.max(this.computeBuySlippageFromDollar(), 0).toFixed(2)}%</span>
+                    <span className="d-block p-2">
+                        Winnings if {this.state.yesNoButton} outcome is true: ${(this.computeTokensFromDollar().toFixed(2) - this.state.amount).toFixed(2)}
+                    </span>
+                    <span className="d-block p-2">
+                        ROI if {this.state.yesNoButton} outcome is true: {(((this.computeTokensFromDollar().toFixed(2) - this.state.amount) * 100) / this.state.amount || 0).toFixed(2)}%.
+                    </span>
+                    <span className="d-block p-2">
+                        New price of {this.state.yesNoButton} after your transaction {(this.computeNewPriceFromDollar() * 100).toFixed(0)}¢.
+                    </span>
+                    <span className="d-block p-2">
+                        New price of {this.state.yesNoButton === "YES" ? "NO" : "YES"} after your transaction {(100 - this.computeNewPriceFromDollar() * 100).toFixed(0)}¢.
+                    </span>
+                </>
+            );
+        } else {
+            return (
+                <>
+                    <span className="d-block p-2">
+                        You will sell {this.state.amount.toFixed(2)} {this.state.yesNoButton} tokens.
+                    </span>
+                    <span className="d-block p-2">You will recieve ${-this.computeDollarFromTokens().toFixed(2) || 0}.</span>
+                    <span className="d-block p-2">The price recieved per token is {((this.computeDollarFromTokens() * 100) / -this.state.amount || 0).toFixed(0)}¢.</span>
+                    <span className="d-block p-2">Transaction Slippage: {Math.max(-this.computeSellSlippageFromToken(), 0).toFixed(2)}%</span>
+                    <span className="d-block p-2">
+                        New price of {this.state.yesNoButton} after your transaction {(100 - this.computeNewPriceFromToken() * 100).toFixed(0)}¢.
+                    </span>
+                    <span className="d-block p-2">
+                        New price of {this.state.yesNoButton === "YES" ? "NO" : "YES"} after your transaction {(this.computeNewPriceFromToken() * 100).toFixed(0)}¢.
+                    </span>
+                </>
+            );
+        }
     };
-
+    computeDollarFromTokens = () => {
+        if (this.state.position) {
+            let index = this.state.displayMarket;
+            let yesTokens = this.state.politicians[index].yes;
+            let noTokens = this.state.politicians[index].no;
+            let amount = -this.state.amount;
+            if (this.state.yesNoButton === "YES") {
+                return (amount - yesTokens - noTokens + Math.sqrt((yesTokens + noTokens - amount) ** 2 + 4 * amount * noTokens)) / 2;
+            } else {
+                return (amount - yesTokens - noTokens + Math.sqrt((yesTokens + noTokens - amount) ** 2 + 4 * amount * yesTokens)) / 2;
+            }
+        } else {
+            return 0;
+        }
+    };
     computeTokensFromDollar = () => {
         if (this.state.position) {
             let index = this.state.displayMarket;
@@ -179,7 +247,7 @@ export default class Markets extends React.Component {
             let noTokens = this.state.politicians[index].no;
             let invariantK = yesTokens * noTokens;
             let amount = this.state.amount;
-            if (this.state.yesNoButton === "NO") {
+            if (this.state.yesNoButton === "YES") {
                 return yesTokens + amount - invariantK / (noTokens + amount);
             } else {
                 return noTokens + amount - invariantK / (yesTokens + amount);
@@ -188,7 +256,6 @@ export default class Markets extends React.Component {
             return 0;
         }
     };
-
     computeNewPriceFromDollar = () => {
         if (this.state.position) {
             let index = this.state.displayMarket;
@@ -196,20 +263,56 @@ export default class Markets extends React.Component {
             let noTokens = this.state.politicians[index].no;
             let invariantK = yesTokens * noTokens;
             let amount = this.state.amount;
-            return invariantK / (yesTokens + amount) / (yesTokens + amount + invariantK / (yesTokens + amount));
+            if (this.state.yesNoButton === "YES") {
+                return (noTokens + amount) / (noTokens + amount + invariantK / (noTokens + amount));
+            } else {
+                return (yesTokens + amount) / (yesTokens + amount + invariantK / (yesTokens + amount));
+            }
         } else {
             return 0;
         }
     };
-
-    computeSlippageFromDollar = () => {
+    computeNewPriceFromToken = () => {
         if (this.state.position) {
             let index = this.state.displayMarket;
             let yesTokens = this.state.politicians[index].yes;
             let noTokens = this.state.politicians[index].no;
-            let yesPrice = yesTokens / (yesTokens + noTokens);
-            let noPrice = noTokens / (yesTokens + noTokens);
+            let invariantK = yesTokens * noTokens;
+            let money = -this.computeDollarFromTokens();
+            if (this.state.yesNoButton === "YES") {
+                return (yesTokens + money) / (yesTokens + money + invariantK / (yesTokens + money));
+            } else {
+                return (noTokens + money) / (noTokens + money + invariantK / (noTokens + money));
+            }
+        } else {
+            return 0;
+        }
+    };
+    computeBuySlippageFromDollar = () => {
+        if (this.state.position) {
+            let index = this.state.displayMarket;
+            let yesTokens = this.state.politicians[index].yes;
+            let noTokens = this.state.politicians[index].no;
+            let yesPrice = noTokens / (yesTokens + noTokens);
+            let noPrice = yesTokens / (yesTokens + noTokens);
             let priceToPay = (this.state.amount * 100) / this.computeTokensFromDollar();
+            if (this.state.yesNoButton === "YES") {
+                return Math.abs(priceToPay - yesPrice) / yesPrice - 100 || 0;
+            } else {
+                return Math.abs(priceToPay - noPrice) / noPrice - 100 || 0;
+            }
+        } else {
+            return 0;
+        }
+    };
+    computeSellSlippageFromToken = () => {
+        if (this.state.position) {
+            let index = this.state.displayMarket;
+            let yesTokens = this.state.politicians[index].yes;
+            let noTokens = this.state.politicians[index].no;
+            let yesPrice = noTokens / (yesTokens + noTokens);
+            let noPrice = yesTokens / (yesTokens + noTokens);
+            let priceToPay = (this.computeDollarFromTokens() * 100) / -this.state.amount;
             if (this.state.yesNoButton === "YES") {
                 return Math.abs(priceToPay - yesPrice) / yesPrice - 100 || 0;
             } else {
@@ -221,27 +324,39 @@ export default class Markets extends React.Component {
     };
 
     async componentDidMount() {
-        let response = await axios.get(API_URL + "/open_markets/" + this.props.market_id);
+        //Pull all politician markets
+        let response1 = await axios.get(API_URL + "/open_markets/" + this.props.market_id);
         this.setState({
-            position: response.data.openMarkets[0].position,
-            country: response.data.openMarkets[0].country,
-            description: response.data.openMarkets[0].description,
-            politicians: response.data.openMarkets[0].politicians,
-            timestampCreated: response.data.openMarkets[0].timestampCreated,
-            timestampExpiry: response.data.openMarkets[0].timestampExpiry,
+            position: response1.data.openMarkets[0].position,
+            country: response1.data.openMarkets[0].country,
+            description: response1.data.openMarkets[0].description,
+            politicians: response1.data.openMarkets[0].politicians,
+            timestampCreated: response1.data.openMarkets[0].timestampCreated,
+            timestampExpiry: response1.data.openMarkets[0].timestampExpiry,
         });
+
+        //Compute global liquidity and global volume
         let globalVolume = 0;
         let globalLiquidity = 0;
         for (let politicianEntry of this.state.politicians) {
             let yesTokens = politicianEntry.yes;
             let noTokens = politicianEntry.no;
-            let yesPrice = yesTokens / (yesTokens + noTokens);
+            let yesPrice = noTokens / (yesTokens + noTokens);
             globalVolume += politicianEntry.volume;
             globalLiquidity += yesPrice * yesTokens * 2;
         }
         this.setState({
             globalLiquidity: globalLiquidity,
             globalVolume: globalVolume,
+        });
+
+        //Pull yes no tokens for market 0
+        let market_id = this.state.politicians[0].market_id;
+        let response2 = await axios.get(API_URL + "/balances/" + market_id + "/" + this.props.userSessionDetails._id);
+
+        this.setState({
+            yesBalance: response2.data.balances.yes,
+            noBalance: response2.data.balances.no,
         });
     }
 
