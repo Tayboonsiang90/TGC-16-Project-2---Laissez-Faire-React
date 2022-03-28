@@ -8,8 +8,8 @@ export default class Dashboard extends React.Component {
     state = {
         depositAmount: 0,
         withdrawAmount: 0,
-        depositSuccessFlag: 0,
-        withdrawSuccessFlag: 0,
+        depositSuccessFlag: false,
+        withdrawSuccessFlag: false,
         withdrawalMessage: "",
         transactions: [],
     };
@@ -27,7 +27,7 @@ export default class Dashboard extends React.Component {
         });
 
         this.setState({
-            depositSuccessFlag: 1,
+            depositSuccessFlag: true,
         });
 
         this.props.updateSessionState();
@@ -42,7 +42,7 @@ export default class Dashboard extends React.Component {
 
     withdrawButton = async () => {
         this.setState({
-            withdrawSuccessFlag: 1,
+            withdrawSuccessFlag: true,
             withdrawalMessage: "",
         });
         await axios
@@ -53,7 +53,7 @@ export default class Dashboard extends React.Component {
             .catch((error) => {
                 this.setState({
                     withdrawalMessage: error.response.data.message,
-                    withdrawSuccessFlag: 0,
+                    withdrawSuccessFlag: false,
                 });
             });
 
@@ -121,7 +121,16 @@ export default class Dashboard extends React.Component {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title">DEPOSIT</h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-bs-dismiss="modal"
+                                    onClick={() => {
+                                        this.setState({
+                                            depositSuccessFlag: false,
+                                        });
+                                    }}
+                                ></button>
                             </div>
                             <div className="modal-body">
                                 <div className="alert alert-success alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.depositSuccessFlag ? "block" : "none" }}>
@@ -147,7 +156,16 @@ export default class Dashboard extends React.Component {
                                 <button type="button" onClick={this.depositButton} className="btn btn-success">
                                     Submit Deposit
                                 </button>
-                                <button type="button" className="btn btn-danger" data-bs-dismiss="modal">
+                                <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    data-bs-dismiss="modal"
+                                    onClick={() => {
+                                        this.setState({
+                                            depositSuccessFlag: false,
+                                        });
+                                    }}
+                                >
                                     Exit
                                 </button>
                             </div>
@@ -164,7 +182,16 @@ export default class Dashboard extends React.Component {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title">WITHDRAWAL</h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-bs-dismiss="modal"
+                                    onClick={() => {
+                                        this.setState({
+                                            withdrawSuccessFlag: false,
+                                        });
+                                    }}
+                                ></button>
                             </div>
                             <div className="modal-body">
                                 <div className="alert alert-success alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.withdrawSuccessFlag ? "block" : "none" }}>
@@ -194,7 +221,16 @@ export default class Dashboard extends React.Component {
                                 <button type="button" onClick={this.withdrawButton} className="btn btn-success">
                                     Submit Withdrawal
                                 </button>
-                                <button type="button" className="btn btn-danger" data-bs-dismiss="modal">
+                                <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    data-bs-dismiss="modal"
+                                    onClick={() => {
+                                        this.setState({
+                                            withdrawSuccessFlag: false,
+                                        });
+                                    }}
+                                >
                                     Exit
                                 </button>
                             </div>

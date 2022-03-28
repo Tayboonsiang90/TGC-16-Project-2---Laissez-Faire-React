@@ -48,8 +48,8 @@ export default class Markets extends React.Component {
                                 for (let politicianEntry of market.politicians) {
                                     let yesTokens = politicianEntry.yes;
                                     let noTokens = politicianEntry.no;
-                                    let yesPrice = yesTokens / (yesTokens + noTokens);
-                                    let noPrice = noTokens / (yesTokens + noTokens);
+                                    let yesPrice = noTokens / (yesTokens + noTokens);
+                                    let noPrice = yesTokens / (yesTokens + noTokens);
                                     globalVolume += politicianEntry.volume;
                                     globalLiquidity += yesPrice * yesTokens * 2;
                                     renderArray.push(
