@@ -134,10 +134,10 @@ export default class Markets extends React.Component {
         return (
             <>
                 <div className="mt-4 d-flex align-items-center justify-content-evenly">
-                    <button type="button" className={"shadow-none btn btn-outline-success w-100" + (this.state.mintRedeemButton === "MINT" ? " active" : "")} data-bs-toggle="button" name="addRemoveButton" value="MINT" onClick={this.onEventString}>
+                    <button type="button" className={"shadow-none btn btn-outline-success w-100" + (this.state.mintRedeemButton === "MINT" ? " active" : "")} data-bs-toggle="button" name="mintRedeemButton" value="MINT" onClick={this.onEventString}>
                         MINT
                     </button>
-                    <button type="button" className={"shadow-none btn btn-outline-danger w-100" + (this.state.mintRedeemButton === "REDEEM" ? " active" : "")} data-bs-toggle="button" name="addRemoveButton" value="REDEEM" onClick={this.onEventString}>
+                    <button type="button" className={"shadow-none btn btn-outline-danger w-100" + (this.state.mintRedeemButton === "REDEEM" ? " active" : "")} data-bs-toggle="button" name="mintRedeemButton" value="REDEEM" onClick={this.onEventString}>
                         REDEEM
                     </button>
                 </div>
