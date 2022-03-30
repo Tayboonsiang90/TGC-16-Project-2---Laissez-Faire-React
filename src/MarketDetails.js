@@ -271,14 +271,14 @@ export default class Markets extends React.Component {
                     <div className=" text-end text-muted">{this.state.yesBalance.toFixed(2)} : YES Balance</div>
                     <div className="text-end text-muted">{this.state.noBalance.toFixed(2)} : NO Balance</div>
                     <div className="d-flex align-items-center justify-content-evenly">
-                        {this.state.addRemoveButton === "ADD" ? <i className="fa-solid fa-coins me-3"></i> : <i className="fa-solid fa-percent me-3"></i>}
+                        {this.state.addRemoveButton === "ADD" ? <i className="fa-solid fa-y me-3"></i> : <i className="fa-solid fa-percent me-3"></i>}
                         <input autoComplete="off" className="form-control shadow-none" type="number" placeholder="Amount" value={this.state.addRemoveAmount} name="addRemoveAmount" onChange={this.onEventNumber}></input>
                         <button type="button" className="shadow-none btn btn-dark" name="addRemoveAmount" value={this.state.addRemoveButton === "ADD" ? this.state.liquidityBalance : this.state.liquidityBalance} onClick={this.onEventNumber}>
                             MAX
                         </button>
                     </div>
                     <div className="d-flex align-items-center justify-content-evenly">
-                        {this.state.addRemoveButton === "ADD" ? <i className="fa-solid fa-coins me-3"></i> : <i className="fa-solid fa-percent me-3"></i>}
+                        <i className="fa-solid fa-n me-3"></i>
                         <input autoComplete="off" className="form-control shadow-none" type="number" placeholder="Amount" value={this.state.addRemoveAmount} name="addRemoveAmount" onChange={this.onEventNumber}></input>
                         <button type="button" className="shadow-none btn btn-dark" name="addRemoveAmount" value={this.state.addRemoveButton === "ADD" ? this.state.liquidityBalance : this.state.liquidityBalance} onClick={this.onEventNumber}>
                             MAX
