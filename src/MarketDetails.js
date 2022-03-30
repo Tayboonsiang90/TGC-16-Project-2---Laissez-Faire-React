@@ -20,11 +20,16 @@ export default class Markets extends React.Component {
         amount: 0,
         yesBalance: 0,
         noBalance: 0,
-        warningMessage: "",
-        successMessage: false,
+        liquidityBalance: 0,
+        warningBuySellMessage: "",
+        successBuySellMessage: false,
+        warningMintRedeemMessage: "",
+        successMintRedeemMessage: false,
         tradeLiquidityButton: "TRADE",
         addRemoveButton: "ADD",
+        addRemoveAmount: 0,
         mintRedeemButton: "MINT",
+        mintRedeemAmount: 0,
     };
 
     onEventString = (evt) => {
@@ -58,11 +63,43 @@ export default class Markets extends React.Component {
             })
             .catch((error) => {
                 this.setState({
-                    warningMessage: error.response.data.message,
+                    warningBuySellMessage: error.response.data.message,
                 });
             });
         this.setState({
-            successMessage: true,
+            successBuySellMessage: true,
+        });
+    };
+
+    submitMintRedeemTransaction = async () => {
+        await axios
+            .put(API_URL + "/mint_redeem/" + this.state.politicians[this.state.displayMarket].market_id + "/" + this.props.userSessionDetails._id, {
+                mintOrRedeem: this.state.mintRedeemButton,
+                amount: this.state.mintRedeemAmount,
+            })
+            .catch((error) => {
+                this.setState({
+                    warningMintRedeemMessage: error.response.data.message,
+                });
+            });
+        this.setState({
+            successMintRedeemMessage: true,
+        });
+    };
+
+    submitLiquidityTransaction = async () => {
+        await axios
+            .put(API_URL + "/mint_redeem/" + this.state.politicians[this.state.displayMarket].market_id + "/" + this.props.userSessionDetails._id, {
+                mintOrRedeem: this.state.mintRedeemButton,
+                amount: this.state.mintRedeemAmount,
+            })
+            .catch((error) => {
+                this.setState({
+                    warningMintRedeemMessage: error.response.data.message,
+                });
+            });
+        this.setState({
+            successMintRedeemMessage: true,
         });
     };
 
@@ -133,88 +170,305 @@ export default class Markets extends React.Component {
     renderLiquiditySidebar() {
         return (
             <>
-                <div className="mt-4 d-flex align-items-center justify-content-evenly">
-                    <button type="button" className={"shadow-none btn btn-outline-success w-100" + (this.state.mintRedeemButton === "MINT" ? " active" : "")} data-bs-toggle="button" name="mintRedeemButton" value="MINT" onClick={this.onEventString}>
-                        MINT
+                {/* Mint Redeem  */}
+                <>
+                    <div className="mt-4 d-flex align-items-center justify-content-evenly">
+                        <button type="button" className={"shadow-none btn btn-outline-success w-100" + (this.state.mintRedeemButton === "MINT" ? " active" : "")} data-bs-toggle="button" name="mintRedeemButton" value="MINT" onClick={this.onEventString}>
+                            MINT
+                        </button>
+                        <button type="button" className={"shadow-none btn btn-outline-danger w-100" + (this.state.mintRedeemButton === "REDEEM" ? " active" : "")} data-bs-toggle="button" name="mintRedeemButton" value="REDEEM" onClick={this.onEventString}>
+                            REDEEM
+                        </button>
+                    </div>
+                    <div className="mt-4 text-end text-muted">${this.props.userSessionDetails.USD.toFixed(2)} : Available Balance</div>
+                    <div className="text-end text-muted">{this.state.yesBalance.toFixed(2)} : YES Balance</div>
+                    <div className="text-end text-muted">{this.state.noBalance.toFixed(2)} : NO Balance</div>
+                    <div className="d-flex align-items-center justify-content-evenly">
+                        {this.state.mintRedeemButton === "MINT" ? <i className="fa-solid fa-dollar-sign me-3"></i> : <i className="fa-solid fa-coins me-3"></i>}
+                        <input autoComplete="off" className="form-control shadow-none" type="number" placeholder="Amount" value={this.state.mintRedeemAmount} name="mintRedeemAmount" onChange={this.onEventNumber}></input>
+                        <button type="button" className="shadow-none btn btn-dark" name="mintRedeemAmount" value={this.state.mintRedeemButton === "MINT" ? this.props.userSessionDetails.USD : Math.min(this.state.yesBalance, this.state.noBalance)} onClick={this.onEventNumber}>
+                            MAX
+                        </button>
+                    </div>
+                    <input
+                        type="range"
+                        className="mt-2 form-range"
+                        step="0.05"
+                        min="0"
+                        max={this.state.mintRedeemButton === "MINT" ? this.props.userSessionDetails.USD : Math.min(this.state.yesBalance, this.state.noBalance)}
+                        value={this.state.mintRedeemAmount}
+                        name="mintRedeemAmount"
+                        onChange={this.onEventNumber}
+                    ></input>
+                    {this.mintRedeemDetails()}
+                    <button
+                        type="button"
+                        className="shadow-none btn btn-secondary w-100 mt-3"
+                        name="submitButton"
+                        onClick={this.submitButton}
+                        disabled={this.state.mintRedeemAmount <= 0 || this.state.mintRedeemAmount > (this.state.mintRedeemButton === "MINT" ? this.props.userSessionDetails.USD : Math.min(this.state.yesBalance, this.state.noBalance))}
+                        data-bs-toggle="modal"
+                        data-bs-target="#mintRedeemModal"
+                    >
+                        SUBMIT
                     </button>
-                    <button type="button" className={"shadow-none btn btn-outline-danger w-100" + (this.state.mintRedeemButton === "REDEEM" ? " active" : "")} data-bs-toggle="button" name="mintRedeemButton" value="REDEEM" onClick={this.onEventString}>
-                        REDEEM
-                    </button>
+                </>
+                {/* Confirmation modal  */}
+                <div className="modal fade" id="mintRedeemModal" tabIndex="-1">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Please check your minting/redemption details</h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-bs-dismiss="modal"
+                                    onClick={() => {
+                                        this.setState({ successMintRedeemMessage: false });
+                                    }}
+                                ></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="alert alert-success alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.successMintRedeemMessage ? "block" : "none" }}>
+                                    <strong>Your minting/redemption has been successfully processed.</strong>
+                                    <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                                <div className="alert alert-danger alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.warningMintRedeemMessage ? "block" : "none" }}>
+                                    <strong>{this.state.warningMintRedeemMessage}</strong>
+                                    <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                                {this.mintRedeemDetails()}
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" onClick={this.submitMintRedeemTransaction} className="btn btn-success">
+                                    Submit Transaction
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    data-bs-dismiss="modal"
+                                    onClick={() => {
+                                        this.setState({ successMintRedeemMessage: false });
+                                    }}
+                                >
+                                    Exit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="mt-4 text-end text-muted">${this.props.userSessionDetails.USD.toFixed(2)} : Available Balance</div>
-                <div className="text-end text-muted">{this.state.yesBalance.toFixed(2)} : YES Balance</div>
-                <div className="text-end text-muted">{this.state.noBalance.toFixed(2)} : NO Balance</div>
-                <div className="d-flex align-items-center justify-content-evenly">
-                    {this.state.buySellButton === "BUY" ? <i className="fa-solid fa-dollar-sign me-3"></i> : <i className="fa-solid fa-coins me-3"></i>}
-                    <input autoComplete="off" className="form-control shadow-none" type="number" placeholder="Amount" value={this.state.amount} name="amount" onChange={this.onEventNumber}></input>
-                    <button type="button" className="shadow-none btn btn-dark" name="amount" value={this.state.buySellButton === "BUY" ? this.props.userSessionDetails.USD : this.state.yesNoButton === "YES" ? this.state.yesBalance : this.state.noBalance} onClick={this.onEventNumber}>
-                        MAX
+                {/* Add Remove Liquidity */}
+                <>
+                    <div className="mt-4 border-top border-warning border-5 pt-4 d-flex align-items-center justify-content-evenly">
+                        <button type="button" className={"shadow-none btn btn-outline-success w-100" + (this.state.addRemoveButton === "ADD" ? " active" : "")} data-bs-toggle="button" name="addRemoveButton" value="ADD" onClick={this.onEventString}>
+                            ADD
+                        </button>
+                        <button type="button" className={"shadow-none btn btn-outline-danger w-100" + (this.state.addRemoveButton === "REMOVE" ? " active" : "")} data-bs-toggle="button" name="addRemoveButton" value="REMOVE" onClick={this.onEventString}>
+                            REMOVE
+                        </button>
+                    </div>
+                    <div className="mt-4 text-end text-muted">{this.state.liquidityBalance.toFixed(2)} : Liquidity Shares Balance</div>
+                    <div className=" text-end text-muted">{this.state.yesBalance.toFixed(2)} : YES Balance</div>
+                    <div className="text-end text-muted">{this.state.noBalance.toFixed(2)} : NO Balance</div>
+                    <div className="d-flex align-items-center justify-content-evenly">
+                        {this.state.addRemoveButton === "ADD" ? <i className="fa-solid fa-coins me-3"></i> : <i className="fa-solid fa-percent me-3"></i>}
+                        <input autoComplete="off" className="form-control shadow-none" type="number" placeholder="Amount" value={this.state.addRemoveAmount} name="addRemoveAmount" onChange={this.onEventNumber}></input>
+                        <button type="button" className="shadow-none btn btn-dark" name="addRemoveAmount" value={this.state.addRemoveButton === "ADD" ? this.state.liquidityBalance : this.state.liquidityBalance} onClick={this.onEventNumber}>
+                            MAX
+                        </button>
+                    </div>
+                    <div className="d-flex align-items-center justify-content-evenly">
+                        {this.state.addRemoveButton === "ADD" ? <i className="fa-solid fa-coins me-3"></i> : <i className="fa-solid fa-percent me-3"></i>}
+                        <input autoComplete="off" className="form-control shadow-none" type="number" placeholder="Amount" value={this.state.addRemoveAmount} name="addRemoveAmount" onChange={this.onEventNumber}></input>
+                        <button type="button" className="shadow-none btn btn-dark" name="addRemoveAmount" value={this.state.addRemoveButton === "ADD" ? this.state.liquidityBalance : this.state.liquidityBalance} onClick={this.onEventNumber}>
+                            MAX
+                        </button>
+                    </div>
+                    <input type="range" className="mt-2 form-range" step="0.05" min="0" max={this.state.addRemoveButton === "ADD" ? this.state.liquidityBalance : this.state.liquidityBalance} value={this.state.amount} name="amount" onChange={this.onEventNumber}></input>
+                    {this.liquidityDetails()}
+                    <button
+                        type="button"
+                        className="shadow-none btn btn-secondary w-100 mt-3"
+                        name="submitButton"
+                        onClick={this.submitLiquidityTransaction}
+                        disabled={this.state.addRemoveAmount <= 0 || this.state.addRemoveAmount > (this.state.addRemoveButton === "ADD" ? this.state.liquidityBalance : this.state.liquidityBalance)}
+                        data-bs-toggle="modal"
+                        data-bs-target="#liquidityModal"
+                    >
+                        SUBMIT
                     </button>
+                </>
+                {/* Confirmation modal  */}
+                <div className="modal fade" id="liquidityModal" tabIndex="-1">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Please check your liquidity provision details</h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-bs-dismiss="modal"
+                                    onClick={() => {
+                                        this.setState({ successMintRedeemMessage: false });
+                                    }}
+                                ></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="alert alert-success alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.successMintRedeemMessage ? "block" : "none" }}>
+                                    <strong>Your liquidity provision request has been successfully processed.</strong>
+                                    <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                                <div className="alert alert-danger alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.warningMintRedeemMessage ? "block" : "none" }}>
+                                    <strong>{this.state.warningMintRedeemMessage}</strong>
+                                    <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                                {this.mintRedeemDetails()}
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" onClick={this.submitMintRedeemTransaction} className="btn btn-success">
+                                    Submit Transaction
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    data-bs-dismiss="modal"
+                                    onClick={() => {
+                                        this.setState({ successMintRedeemMessage: false });
+                                    }}
+                                >
+                                    Exit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <input
-                    type="range"
-                    className="mt-2 form-range"
-                    step="0.05"
-                    min="0"
-                    max={this.state.buySellButton === "BUY" ? this.props.userSessionDetails.USD : this.state.yesNoButton === "YES" ? this.state.yesBalance : this.state.noBalance}
-                    value={this.state.amount}
-                    name="amount"
-                    onChange={this.onEventNumber}
-                ></input>
-                <button
-                    type="button"
-                    className="shadow-none btn btn-secondary w-100 mt-3"
-                    name="submitButton"
-                    onClick={this.submitButton}
-                    disabled={this.state.amount <= 0 || this.state.amount > (this.state.buySellButton === "BUY" ? this.props.userSessionDetails.USD : this.state.yesNoButton === "YES" ? this.state.yesBalance : this.state.noBalance)}
-                    data-bs-toggle="modal"
-                    data-bs-target="#withdrawModal"
-                >
-                    SUBMIT
-                </button>
-
-                <div className="mt-4 border-top border-warning border-5 pt-4 d-flex align-items-center justify-content-evenly">
-                    <button type="button" className={"shadow-none btn btn-outline-success w-100" + (this.state.addRemoveButton === "ADD" ? " active" : "")} data-bs-toggle="button" name="addRemoveButton" value="ADD" onClick={this.onEventString}>
-                        ADD
-                    </button>
-                    <button type="button" className={"shadow-none btn btn-outline-danger w-100" + (this.state.addRemoveButton === "REMOVE" ? " active" : "")} data-bs-toggle="button" name="addRemoveButton" value="REMOVE" onClick={this.onEventString}>
-                        REMOVE
-                    </button>
-                </div>
-
-                <div className="mt-4 text-end text-muted">{this.state.yesBalance.toFixed(2)} : YES Balance</div>
-                <div className="text-end text-muted">{this.state.noBalance.toFixed(2)} : NO Balance</div>
-                <div className="d-flex align-items-center justify-content-evenly">
-                    {this.state.buySellButton === "BUY" ? <i className="fa-solid fa-dollar-sign me-3"></i> : <i className="fa-solid fa-coins me-3"></i>}
-                    <input autoComplete="off" className="form-control shadow-none" type="number" placeholder="Amount" value={this.state.amount} name="amount" onChange={this.onEventNumber}></input>
-                    <button type="button" className="shadow-none btn btn-dark" name="amount" value={this.state.buySellButton === "BUY" ? this.props.userSessionDetails.USD : this.state.yesNoButton === "YES" ? this.state.yesBalance : this.state.noBalance} onClick={this.onEventNumber}>
-                        MAX
-                    </button>
-                </div>
-                <input
-                    type="range"
-                    className="mt-2 form-range"
-                    step="0.05"
-                    min="0"
-                    max={this.state.buySellButton === "BUY" ? this.props.userSessionDetails.USD : this.state.yesNoButton === "YES" ? this.state.yesBalance : this.state.noBalance}
-                    value={this.state.amount}
-                    name="amount"
-                    onChange={this.onEventNumber}
-                ></input>
-                <button
-                    type="button"
-                    className="shadow-none btn btn-secondary w-100 mt-3"
-                    name="submitButton"
-                    onClick={this.submitButton}
-                    disabled={this.state.amount <= 0 || this.state.amount > (this.state.buySellButton === "BUY" ? this.props.userSessionDetails.USD : this.state.yesNoButton === "YES" ? this.state.yesBalance : this.state.noBalance)}
-                    data-bs-toggle="modal"
-                    data-bs-target="#withdrawModal"
-                >
-                    SUBMIT
-                </button>
             </>
         );
     }
+
+    liquidityDetails = () => {
+        if (this.state.addRemoveButton === "ADD") {
+            return (
+                <>
+                    <table className="table">
+                        <tbody>
+                            <tr>
+                                <td>Total Liquidity Shares</td>
+                                <td>{this.state.politicians[this.state.displayMarket].liquidityShares.toFixed(2) || 0}</td>
+                            </tr>
+                            <tr>
+                                <td>YES Tokens in Pool</td>
+                                <td>{this.state.politicians[this.state.displayMarket].yes.toFixed(2) || 0} YES</td>
+                            </tr>
+                            <tr>
+                                <td>NO Tokens in Pool</td>
+                                <td>{this.state.politicians[this.state.displayMarket].no.toFixed(2) || 0} NO</td>
+                            </tr>
+                            <tr>
+                                <td>YES Balance after Minting</td>
+                                <td>{(this.state.mintRedeemAmount + this.state.yesBalance).toFixed(2) || 0} YES</td>
+                            </tr>
+                            <tr>
+                                <td>NO Balance after Minting</td>
+                                <td>{(this.state.mintRedeemAmount + this.state.noBalance).toFixed(2) || 0} NO</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </>
+            );
+        } else {
+            return (
+                <>
+                    <table className="table">
+                        <tbody>
+                            <tr>
+                                <td>YES Tokens Redeemed</td>
+                                <td>{this.state.mintRedeemAmount.toFixed(2) || 0} YES</td>
+                            </tr>
+                            <tr>
+                                <td>NO Tokens Redeemed</td>
+                                <td>{this.state.mintRedeemAmount.toFixed(2) || 0} NO</td>
+                            </tr>
+                            <tr>
+                                <td>$ Recieved</td>
+                                <td>${this.state.mintRedeemAmount.toFixed(2) || 0}</td>
+                            </tr>
+                            <tr>
+                                <td>YES Balance after Redemption</td>
+                                <td>{(-this.state.mintRedeemAmount + this.state.yesBalance).toFixed(2) || 0} YES</td>
+                            </tr>
+                            <tr>
+                                <td>NO Balance after Redemption</td>
+                                <td>{(-this.state.mintRedeemAmount + this.state.noBalance).toFixed(2) || 0} NO</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </>
+            );
+        }
+    };
+
+    mintRedeemDetails = () => {
+        if (this.state.mintRedeemButton === "MINT") {
+            return (
+                <>
+                    <table className="table">
+                        <tbody>
+                            <tr>
+                                <td>Cost</td>
+                                <td>${this.state.mintRedeemAmount.toFixed(2) || 0}</td>
+                            </tr>
+                            <tr>
+                                <td>YES Tokens Minted</td>
+                                <td>{this.state.mintRedeemAmount.toFixed(2) || 0} YES</td>
+                            </tr>
+                            <tr>
+                                <td>NO Tokens Minted</td>
+                                <td>{this.state.mintRedeemAmount.toFixed(2) || 0} NO</td>
+                            </tr>
+                            <tr>
+                                <td>YES Balance after Minting</td>
+                                <td>{(this.state.mintRedeemAmount + this.state.yesBalance).toFixed(2) || 0} YES</td>
+                            </tr>
+                            <tr>
+                                <td>NO Balance after Minting</td>
+                                <td>{(this.state.mintRedeemAmount + this.state.noBalance).toFixed(2) || 0} NO</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </>
+            );
+        } else {
+            return (
+                <>
+                    <table className="table">
+                        <tbody>
+                            <tr>
+                                <td>YES Tokens Redeemed</td>
+                                <td>{this.state.mintRedeemAmount.toFixed(2) || 0} YES</td>
+                            </tr>
+                            <tr>
+                                <td>NO Tokens Redeemed</td>
+                                <td>{this.state.mintRedeemAmount.toFixed(2) || 0} NO</td>
+                            </tr>
+                            <tr>
+                                <td>$ Recieved</td>
+                                <td>${this.state.mintRedeemAmount.toFixed(2) || 0}</td>
+                            </tr>
+                            <tr>
+                                <td>YES Balance after Redemption</td>
+                                <td>{(-this.state.mintRedeemAmount + this.state.yesBalance).toFixed(2) || 0} YES</td>
+                            </tr>
+                            <tr>
+                                <td>NO Balance after Redemption</td>
+                                <td>{(-this.state.mintRedeemAmount + this.state.noBalance).toFixed(2) || 0} NO</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </>
+            );
+        }
+    };
 
     // Trade Sidebar
     renderTradeSidebar() {
@@ -261,7 +515,7 @@ export default class Markets extends React.Component {
                         onChange={this.onEventNumber}
                     ></input>
 
-                    {this.transactionDetails()}
+                    {this.transactionBuySellDetails()}
                     <button
                         type="button"
                         className="shadow-none btn btn-secondary w-100 mt-3"
@@ -269,12 +523,12 @@ export default class Markets extends React.Component {
                         onClick={this.submitButton}
                         disabled={this.state.amount <= 0 || this.state.amount > (this.state.buySellButton === "BUY" ? this.props.userSessionDetails.USD : this.state.yesNoButton === "YES" ? this.state.yesBalance : this.state.noBalance)}
                         data-bs-toggle="modal"
-                        data-bs-target="#withdrawModal"
+                        data-bs-target="#buySellModal"
                     >
                         SUBMIT
                     </button>
                     {/* Confirmation modal  */}
-                    <div className="modal fade" id="withdrawModal" tabIndex="-1">
+                    <div className="modal fade" id="buySellModal" tabIndex="-1">
                         <div className="modal-dialog">
                             <div className="modal-content">
                                 <div className="modal-header">
@@ -284,20 +538,20 @@ export default class Markets extends React.Component {
                                         className="btn-close"
                                         data-bs-dismiss="modal"
                                         onClick={() => {
-                                            this.setState({ successMessage: false });
+                                            this.setState({ successBuySellMessage: false });
                                         }}
                                     ></button>
                                 </div>
                                 <div className="modal-body">
-                                    <div className="alert alert-success alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.successMessage ? "block" : "none" }}>
+                                    <div className="alert alert-success alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.successBuySellMessage ? "block" : "none" }}>
                                         <strong>Your transaction has been successfully processed.</strong>
                                         <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
                                     </div>
-                                    <div className="alert alert-danger alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.warningMessage ? "block" : "none" }}>
-                                        <strong>{this.state.warningMessage}</strong>
+                                    <div className="alert alert-danger alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.warningBuySellMessage ? "block" : "none" }}>
+                                        <strong>{this.state.warningBuySellMessage}</strong>
                                         <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
                                     </div>
-                                    {this.transactionDetails()}
+                                    {this.transactionBuySellDetails()}
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" onClick={this.submitTransaction} className="btn btn-success">
@@ -308,7 +562,7 @@ export default class Markets extends React.Component {
                                         className="btn btn-danger"
                                         data-bs-dismiss="modal"
                                         onClick={() => {
-                                            this.setState({ successMessage: false });
+                                            this.setState({ successBuySellMessage: false });
                                         }}
                                     >
                                         Exit
@@ -322,7 +576,7 @@ export default class Markets extends React.Component {
         );
     }
     // Transaction Details
-    transactionDetails = () => {
+    transactionBuySellDetails = () => {
         if (this.state.buySellButton === "BUY") {
             return (
                 <>
@@ -539,6 +793,7 @@ export default class Markets extends React.Component {
         this.setState({
             yesBalance: response2.data.balances.yes,
             noBalance: response2.data.balances.no,
+            liquidityBalance: response2.data.balances.liquidityShares,
         });
     }
 
