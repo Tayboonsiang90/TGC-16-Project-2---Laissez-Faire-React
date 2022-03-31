@@ -25,11 +25,14 @@ export default class Markets extends React.Component {
         successBuySellMessage: false,
         warningMintRedeemMessage: "",
         successMintRedeemMessage: false,
+        warningAddRemoveMessage: "",
+        successAddRemoveMessage: false,
         tradeLiquidityButton: "TRADE",
         addRemoveButton: "ADD",
         addRemoveAmount: 0,
         mintRedeemButton: "MINT",
         mintRedeemAmount: 0,
+        orderHistory: [],
     };
 
     onEventString = (evt) => {
@@ -41,6 +44,13 @@ export default class Markets extends React.Component {
     onEventNumber = (evt) => {
         this.setState({
             [evt.currentTarget.name]: Number(evt.currentTarget.value),
+        });
+    };
+
+    addRemoveNumber = (evt) => {
+        //(this.state.addRemoveAmount * (this.state.politicians[this.state.displayMarket].no) / this.state.politicians[this.state.displayMarket].yes)
+        this.setState({
+            addRemoveAmount: Number(evt.currentTarget.value) * (this.state.politicians[this.state.displayMarket].yes / this.state.politicians[this.state.displayMarket].no),
         });
     };
 
@@ -100,6 +110,22 @@ export default class Markets extends React.Component {
             });
         this.setState({
             successMintRedeemMessage: true,
+        });
+    };
+
+    submitAddRemoveTransaction = async () => {
+        await axios
+            .put(API_URL + "/liquidity/" + this.state.politicians[this.state.displayMarket].market_id + "/" + this.props.userSessionDetails._id, {
+                addOrRemove: this.state.addRemoveButton,
+                amount: this.state.addRemoveAmount,
+            })
+            .catch((error) => {
+                this.setState({
+                    warningAddRemoveMessage: error.response.data.message,
+                });
+            });
+        this.setState({
+            successAddRemoveMessage: true,
         });
     };
 
@@ -272,19 +298,47 @@ export default class Markets extends React.Component {
                     <div className="text-end text-muted">{this.state.noBalance.toFixed(2)} : NO Balance</div>
                     <div className="d-flex align-items-center justify-content-evenly">
                         {this.state.addRemoveButton === "ADD" ? <i className="fa-solid fa-y me-3"></i> : <i className="fa-solid fa-percent me-3"></i>}
-                        <input autoComplete="off" className="form-control shadow-none" type="number" placeholder="Amount" value={this.state.addRemoveAmount} name="addRemoveAmount" onChange={this.onEventNumber}></input>
-                        <button type="button" className="shadow-none btn btn-dark" name="addRemoveAmount" value={this.state.addRemoveButton === "ADD" ? this.state.liquidityBalance : this.state.liquidityBalance} onClick={this.onEventNumber}>
+                        <input autoComplete="off" className="form-control shadow-none" type="number" value={this.state.addRemoveAmount} name="addRemoveAmount" onChange={this.onEventNumber}></input>
+                        <button
+                            type="button"
+                            className="shadow-none btn btn-dark"
+                            name="addRemoveAmount"
+                            value={this.state.addRemoveButton === "ADD" ? Math.min(this.state.yesBalance, this.state.noBalance * (this.state.politicians[this.state.displayMarket].yes / this.state.politicians[this.state.displayMarket].no)) : this.state.liquidityBalance}
+                            onClick={this.onEventNumber}
+                        >
                             MAX
                         </button>
                     </div>
-                    <div className="d-flex align-items-center justify-content-evenly">
+                    <div className={"align-items-center justify-content-evenly"} style={{ display: this.state.addRemoveButton === "ADD" ? "flex" : "none" }}>
                         <i className="fa-solid fa-n me-3"></i>
-                        <input autoComplete="off" className="form-control shadow-none" type="number" placeholder="Amount" value={this.state.addRemoveAmount} name="addRemoveAmount" onChange={this.onEventNumber}></input>
-                        <button type="button" className="shadow-none btn btn-dark" name="addRemoveAmount" value={this.state.addRemoveButton === "ADD" ? this.state.liquidityBalance : this.state.liquidityBalance} onClick={this.onEventNumber}>
+                        <input
+                            autoComplete="off"
+                            className="form-control shadow-none"
+                            type="number"
+                            value={(this.state.addRemoveAmount * this.state.politicians[this.state.displayMarket].no) / this.state.politicians[this.state.displayMarket].yes}
+                            name="addRemoveAmount"
+                            onChange={this.addRemoveNumber}
+                        ></input>
+                        <button
+                            type="button"
+                            className="shadow-none btn btn-dark"
+                            name="addRemoveAmount"
+                            value={Math.min(this.state.noBalance, this.state.yesBalance * (this.state.politicians[this.state.displayMarket].no / this.state.politicians[this.state.displayMarket].yes))}
+                            onClick={this.addRemoveNumber}
+                        >
                             MAX
                         </button>
                     </div>
-                    <input type="range" className="mt-2 form-range" step="0.05" min="0" max={this.state.addRemoveButton === "ADD" ? this.state.liquidityBalance : this.state.liquidityBalance} value={this.state.amount} name="amount" onChange={this.onEventNumber}></input>
+                    <input
+                        type="range"
+                        className="mt-2 form-range"
+                        step="0.001"
+                        min="0"
+                        max={this.state.addRemoveButton === "ADD" ? Math.min(this.state.yesBalance, this.state.noBalance * (this.state.politicians[this.state.displayMarket].yes / this.state.politicians[this.state.displayMarket].no)) : this.state.liquidityBalance}
+                        value={this.state.addRemoveAmount}
+                        name="addRemoveAmount"
+                        onChange={this.onEventNumber}
+                    ></input>
                     {this.liquidityDetails()}
                     <button
                         type="button"
@@ -309,23 +363,23 @@ export default class Markets extends React.Component {
                                     className="btn-close"
                                     data-bs-dismiss="modal"
                                     onClick={() => {
-                                        this.setState({ successMintRedeemMessage: false });
+                                        this.setState({ successAddRemoveMessage: false });
                                     }}
                                 ></button>
                             </div>
                             <div className="modal-body">
-                                <div className="alert alert-success alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.successMintRedeemMessage ? "block" : "none" }}>
+                                <div className="alert alert-success alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.successAddRemoveMessage ? "block" : "none" }}>
                                     <strong>Your liquidity provision request has been successfully processed.</strong>
                                     <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
                                 </div>
-                                <div className="alert alert-danger alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.warningMintRedeemMessage ? "block" : "none" }}>
-                                    <strong>{this.state.warningMintRedeemMessage}</strong>
+                                <div className="alert alert-danger alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.warningAddRemoveMessage ? "block" : "none" }}>
+                                    <strong>{this.state.warningAddRemoveMessage}</strong>
                                     <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
                                 </div>
-                                {this.mintRedeemDetails()}
+                                {this.liquidityDetails()}
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={this.submitMintRedeemTransaction} className="btn btn-success">
+                                <button type="button" onClick={this.submitAddRemoveTransaction} className="btn btn-success">
                                     Submit Transaction
                                 </button>
                                 <button
@@ -333,7 +387,7 @@ export default class Markets extends React.Component {
                                     className="btn btn-danger"
                                     data-bs-dismiss="modal"
                                     onClick={() => {
-                                        this.setState({ successMintRedeemMessage: false });
+                                        this.setState({ successAddRemoveMessage: false });
                                     }}
                                 >
                                     Exit
@@ -357,20 +411,47 @@ export default class Markets extends React.Component {
                                 <td>{this.state.politicians[this.state.displayMarket].liquidityShares.toFixed(2) || 0}</td>
                             </tr>
                             <tr>
-                                <td>YES Tokens in Pool</td>
+                                <td>Your Liquidity Shares Balance Before</td>
+                                <td>{this.state.liquidityBalance.toFixed(2) || 0} </td>
+                            </tr>
+                            <tr>
+                                <td>Your Current % of Pool</td>
+                                <td>{((this.state.liquidityBalance * 100) / this.state.politicians[this.state.displayMarket].liquidityShares).toFixed(2) || 0} %</td>
+                            </tr>
+                            <tr>
+                                <td>Liquidity Shares Minted</td>
+                                <td>{((this.state.addRemoveAmount / this.state.politicians[this.state.displayMarket].yes) * this.state.politicians[this.state.displayMarket].liquidityShares).toFixed(2) || 0}</td>
+                            </tr>
+                            <tr>
+                                <td>Your Liquidity Shares Balance After</td>
+                                <td>{(this.state.liquidityBalance + (this.state.addRemoveAmount / this.state.politicians[this.state.displayMarket].yes) * this.state.politicians[this.state.displayMarket].liquidityShares).toFixed(2) || 0} </td>
+                            </tr>
+                            <tr>
+                                <td>Your % of Pool After</td>
+                                <td>
+                                    {(
+                                        ((this.state.liquidityBalance + (this.state.addRemoveAmount / this.state.politicians[this.state.displayMarket].yes) * this.state.politicians[this.state.displayMarket].liquidityShares) /
+                                            ((this.state.addRemoveAmount / this.state.politicians[this.state.displayMarket].yes) * this.state.politicians[this.state.displayMarket].liquidityShares + this.state.politicians[this.state.displayMarket].liquidityShares)) *
+                                        100
+                                    ).toFixed(2) || 0}
+                                    %
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>YES Tokens in Pool Before</td>
                                 <td>{this.state.politicians[this.state.displayMarket].yes.toFixed(2) || 0} YES</td>
                             </tr>
                             <tr>
-                                <td>NO Tokens in Pool</td>
+                                <td>NO Tokens in Pool Before</td>
                                 <td>{this.state.politicians[this.state.displayMarket].no.toFixed(2) || 0} NO</td>
                             </tr>
                             <tr>
-                                <td>YES Balance after Minting</td>
-                                <td>{(this.state.mintRedeemAmount + this.state.yesBalance).toFixed(2) || 0} YES</td>
+                                <td>YES Tokens in Pool After</td>
+                                <td>{(this.state.politicians[this.state.displayMarket].yes + this.state.addRemoveAmount).toFixed(2) || 0} YES</td>
                             </tr>
                             <tr>
-                                <td>NO Balance after Minting</td>
-                                <td>{(this.state.mintRedeemAmount + this.state.noBalance).toFixed(2) || 0} NO</td>
+                                <td>NO Tokens in Pool After</td>
+                                <td>{(this.state.politicians[this.state.displayMarket].no + this.state.addRemoveAmount * (this.state.politicians[this.state.displayMarket].no / this.state.politicians[this.state.displayMarket].yes)).toFixed(2) || 0} NO</td>
                             </tr>
                         </tbody>
                     </table>
@@ -382,24 +463,52 @@ export default class Markets extends React.Component {
                     <table className="table">
                         <tbody>
                             <tr>
-                                <td>YES Tokens Redeemed</td>
-                                <td>{this.state.mintRedeemAmount.toFixed(2) || 0} YES</td>
+                                <td>Total Liquidity Shares</td>
+                                <td>{this.state.politicians[this.state.displayMarket].liquidityShares.toFixed(2) || 0}</td>
                             </tr>
                             <tr>
-                                <td>NO Tokens Redeemed</td>
-                                <td>{this.state.mintRedeemAmount.toFixed(2) || 0} NO</td>
+                                <td>Your Liquidity Shares Balance Before</td>
+                                <td>{this.state.liquidityBalance.toFixed(2) || 0} </td>
                             </tr>
                             <tr>
-                                <td>$ Recieved</td>
-                                <td>${this.state.mintRedeemAmount.toFixed(2) || 0}</td>
+                                <td>Your Current % of Pool</td>
+                                <td>{((this.state.liquidityBalance * 100) / this.state.politicians[this.state.displayMarket].liquidityShares).toFixed(2) || 0} %</td>
                             </tr>
                             <tr>
-                                <td>YES Balance after Redemption</td>
-                                <td>{(-this.state.mintRedeemAmount + this.state.yesBalance).toFixed(2) || 0} YES</td>
+                                <td>Liquidity Shares Redeemed</td>
+                                <td>{this.state.addRemoveAmount.toFixed(2) || 0}</td>
                             </tr>
                             <tr>
-                                <td>NO Balance after Redemption</td>
-                                <td>{(-this.state.mintRedeemAmount + this.state.noBalance).toFixed(2) || 0} NO</td>
+                                <td>Your Liquidity Shares Balance After</td>
+                                <td>{(this.state.liquidityBalance - this.state.addRemoveAmount).toFixed(2) || 0} </td>
+                            </tr>
+                            <tr>
+                                <td>Your % of Pool After</td>
+                                <td>{(((this.state.liquidityBalance - this.state.addRemoveAmount) * 100) / (this.state.politicians[this.state.displayMarket].liquidityShares - this.state.addRemoveAmount)).toFixed(2) || 0}%</td>
+                            </tr>
+                            <tr>
+                                <td>YES Tokens Recieved</td>
+                                <td>{(this.state.politicians[this.state.displayMarket].yes * (this.state.addRemoveAmount / this.state.politicians[this.state.displayMarket].liquidityShares)).toFixed(2) || 0} YES</td>
+                            </tr>
+                            <tr>
+                                <td>NO Tokens Recieved</td>
+                                <td>{(this.state.politicians[this.state.displayMarket].no * (this.state.addRemoveAmount / this.state.politicians[this.state.displayMarket].liquidityShares)).toFixed(2) || 0} NO</td>
+                            </tr>
+                            <tr>
+                                <td>YES Tokens in Pool Before</td>
+                                <td>{this.state.politicians[this.state.displayMarket].yes.toFixed(2) || 0} YES</td>
+                            </tr>
+                            <tr>
+                                <td>NO Tokens in Pool Before</td>
+                                <td>{this.state.politicians[this.state.displayMarket].no.toFixed(2) || 0} NO</td>
+                            </tr>
+                            <tr>
+                                <td>YES Tokens in Pool After</td>
+                                <td>{(this.state.politicians[this.state.displayMarket].yes - this.state.politicians[this.state.displayMarket].yes * (this.state.addRemoveAmount / this.state.politicians[this.state.displayMarket].liquidityShares)).toFixed(2) || 0} YES</td>
+                            </tr>
+                            <tr>
+                                <td>NO Tokens in Pool After</td>
+                                <td>{(this.state.politicians[this.state.displayMarket].no - this.state.politicians[this.state.displayMarket].no * (this.state.addRemoveAmount / this.state.politicians[this.state.displayMarket].liquidityShares)).toFixed(2) || 0} NO</td>
                             </tr>
                         </tbody>
                     </table>
@@ -795,6 +904,12 @@ export default class Markets extends React.Component {
             noBalance: response2.data.balances.no,
             liquidityBalance: response2.data.balances.liquidityShares,
         });
+
+        //Pull Order History tokens for market 0
+        let response3 = await axios.get(API_URL + "/order_history/" + market_id + "/" + this.props.userSessionDetails._id);
+        this.setState({
+            orderHistory: response3.data,
+        });
     }
 
     render() {
@@ -829,20 +944,7 @@ export default class Markets extends React.Component {
                         </div>
                         <div className="mt-4">{this.renderPoliticianMarkets()}</div>
                         <img className="img-fluid mt-4" src="https://www.presentationpoint.com/wp-content/uploads/2018/12/MS-Graph-in-PowerPoint-inserted-graph.jpg"></img>
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam malesuada elementum justo ac semper. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus semper, diam id sollicitudin tempus, mi nisl facilisis tortor, eu eleifend urna ligula eu quam.
-                            Sed ultrices sollicitudin lacus, eget semper libero ornare eget. Morbi erat mauris, scelerisque at gravida vel, lacinia eget neque. Donec fringilla diam a dolor mollis bibendum. Nam egestas orci id mattis tempus. Cras in velit eu quam eleifend ultricies. Curabitur id
-                            porta lacus, id finibus arcu. Cras sed accumsan lorem, non tempor orci. Sed dictum odio ac metus gravida, eget condimentum orci malesuada. Aenean id mollis quam. Aenean vitae enim elit. Mauris a rutrum dolor. Donec pretium eros vitae tellus maximus tincidunt. Donec id
-                            iaculis metus. Mauris ac diam quis augue luctus cursus. Mauris mi mi, condimentum a interdum eget, sollicitudin ac mauris. Pellentesque maximus vitae mi in tristique. Maecenas eget vestibulum magna. Fusce fringilla est sed quam iaculis, id sagittis augue pellentesque.
-                            Nulla et diam erat. Nam eu mi viverra, aliquam diam at, vestibulum elit. Nam pharetra magna ac lacinia dignissim. Aenean et enim at nulla vestibulum lobortis. Morbi ac tincidunt arcu. Duis ullamcorper suscipit venenatis. Phasellus porta eget dolor vulputate blandit. Etiam
-                            lorem ipsum, ullamcorper tincidunt fringilla vel, sodales a sapien. Maecenas nulla elit, sollicitudin non enim fringilla, elementum sagittis magna. Mauris laoreet diam et justo egestas vehicula. Cras eu dapibus mi. Nunc eget iaculis ipsum. Ut mauris magna, rutrum a ante
-                            a, pellentesque dapibus ipsum. Sed sed sodales dui. Cras iaculis, eros id molestie gravida, orci diam viverra orci, vitae scelerisque arcu augue eu justo. Suspendisse erat lorem, feugiat eget metus eu, rutrum lobortis nisi. Mauris in condimentum lectus, eget malesuada
-                            sem. Cras elementum ullamcorper ex, vel ornare ligula eleifend ut. Ut sit amet fermentum dui, non tristique tortor. Integer ullamcorper vitae ex et aliquet. Nam vel felis et urna vestibulum ultrices. Integer nec purus fermentum, interdum purus bibendum, tristique est. Sed
-                            ac nunc et augue gravida iaculis sed a tortor. Nam fermentum tortor eget magna mattis, sed sagittis tellus suscipit. Sed est odio, hendrerit sit amet urna et, sagittis tincidunt mi. Duis faucibus tempus dui, ut cursus lectus vehicula vitae. Aliquam a convallis risus, ac
-                            suscipit ipsum. Donec a felis elementum enim volutpat ornare sed sit amet eros. In id dapibus nibh. Nunc sem urna, luctus aliquet ante ac, pulvinar sagittis elit. Curabitur id elementum urna, ut tincidunt erat. Vestibulum ante ipsum primis in faucibus orci luctus et
-                            ultrices posuere cubilia curae; Sed tristique vulputate quam, id pharetra erat elementum vitae. Duis vitae dolor a purus aliquet aliquam sit amet sed risus. Donec gravida lacus non porttitor pellentesque. Vivamus maximus efficitur ligula sagittis malesuada. Duis eu
-                            hendrerit tortor, nec viverra nibh. Praesent id eros commodo nulla pretium suscipit sit amet vel turpis. Etiam tristique, risus fermentum sodales tempus, erat metus tincidunt justo, vel consequat purus purus sed nibh.
-                        </p>
+                        <p>{this.state.description}</p>
                     </div>
                     <div className="mt-5 col-12 col-lg-4">{this.renderSidebar()}</div>
                 </div>
