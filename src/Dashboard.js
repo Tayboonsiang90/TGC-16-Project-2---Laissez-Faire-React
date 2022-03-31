@@ -1,6 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import { toHaveDisplayValue } from "@testing-library/jest-dom/dist/matchers";
 
 const API_URL = "http://127.0.0.1:8888";
 
@@ -31,13 +32,7 @@ export default class Dashboard extends React.Component {
         });
 
         this.props.updateSessionState();
-
-        //Update the table state data
-        let response = await axios.get(API_URL + "/transactions/" + this.props.userSessionDetails._id);
-
-        this.setState({
-            transactions: response.data.transactions,
-        });
+        this.updateTableState();
     };
 
     withdrawButton = async () => {
@@ -58,14 +53,17 @@ export default class Dashboard extends React.Component {
             });
 
         this.props.updateSessionState();
+        this.updateTableState();
+    };
 
+    async updateTableState() {
         //Update the table state data
         let response = await axios.get(API_URL + "/transactions/" + this.props.userSessionDetails._id);
 
         this.setState({
             transactions: response.data.transactions,
         });
-    };
+    }
 
     renderTableEntries() {
         let renderArray = [];

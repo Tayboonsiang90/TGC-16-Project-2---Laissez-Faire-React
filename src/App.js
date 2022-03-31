@@ -56,9 +56,17 @@ class App extends React.Component {
     async componentDidMount() {
         try {
             let cookiesDetails = JSON.parse(document.cookie);
-            this.setState({
-                userSessionDetails: cookiesDetails,
-            });
+            if (cookiesDetails._id) {
+                let userDetails = await axios.get(API_URL + "/login/" + cookiesDetails._id);
+                this.setState({
+                    userSessionDetails: userDetails.data.message,
+                });
+                document.cookie = JSON.stringify(userDetails.data.message);
+            }
+
+            // this.setState({
+            //     userSessionDetails: cookiesDetails,
+            // });
         } catch (e) {
             this.setState({
                 userSessionDetails: {
@@ -92,7 +100,7 @@ class App extends React.Component {
         } else if (this.state.display === "MarketDetails") {
             return (
                 <React.Fragment>
-                    <MarketDetails userSessionDetails={this.state.userSessionDetails} updateParentDisplay={this.updateParentDisplay} market_id={this.state.market_id} />
+                    <MarketDetails updateSessionState={this.updateSessionState} userSessionDetails={this.state.userSessionDetails} updateParentDisplay={this.updateParentDisplay} market_id={this.state.market_id} />
                 </React.Fragment>
             );
         } else if (this.state.display === "Login") {

@@ -79,6 +79,15 @@ export default class Markets extends React.Component {
         this.setState({
             successBuySellMessage: true,
         });
+
+        this.props.updateSessionState();
+
+        setTimeout(
+            function () {
+                this.updateOpenMarketsState();
+            }.bind(this),
+            100
+        );
     };
 
     submitMintRedeemTransaction = async () => {
@@ -95,22 +104,15 @@ export default class Markets extends React.Component {
         this.setState({
             successMintRedeemMessage: true,
         });
-    };
 
-    submitLiquidityTransaction = async () => {
-        await axios
-            .put(API_URL + "/mint_redeem/" + this.state.politicians[this.state.displayMarket].market_id + "/" + this.props.userSessionDetails._id, {
-                mintOrRedeem: this.state.mintRedeemButton,
-                amount: this.state.mintRedeemAmount,
-            })
-            .catch((error) => {
-                this.setState({
-                    warningMintRedeemMessage: error.response.data.message,
-                });
-            });
-        this.setState({
-            successMintRedeemMessage: true,
-        });
+        this.props.updateSessionState();
+
+        setTimeout(
+            function () {
+                this.updateOpenMarketsState();
+            }.bind(this),
+            100
+        );
     };
 
     submitAddRemoveTransaction = async () => {
@@ -127,6 +129,15 @@ export default class Markets extends React.Component {
         this.setState({
             successAddRemoveMessage: true,
         });
+
+        this.props.updateSessionState();
+
+        setTimeout(
+            function () {
+                this.updateOpenMarketsState();
+            }.bind(this),
+            100
+        );
     };
 
     renderPoliticianMarkets() {
@@ -909,6 +920,19 @@ export default class Markets extends React.Component {
         let response3 = await axios.get(API_URL + "/order_history/" + market_id + "/" + this.props.userSessionDetails._id);
         this.setState({
             orderHistory: response3.data,
+        });
+    }
+
+    async updateOpenMarketsState() {
+        //Pull all politician markets
+        let response1 = await axios.get(API_URL + "/open_markets/" + this.props.market_id);
+        this.setState({
+            position: response1.data.openMarkets[0].position,
+            country: response1.data.openMarkets[0].country,
+            description: response1.data.openMarkets[0].description,
+            politicians: response1.data.openMarkets[0].politicians,
+            timestampCreated: response1.data.openMarkets[0].timestampCreated,
+            timestampExpiry: response1.data.openMarkets[0].timestampExpiry,
         });
     }
 
