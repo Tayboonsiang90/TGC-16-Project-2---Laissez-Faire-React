@@ -6,21 +6,29 @@ const API_URL = "http://127.0.0.1:8888";
 
 export default class Markets extends React.Component {
     state = {
+        countryList: [],
+        positionList: [],
         openMarkets: [],
         resolvingMarkets: [{}, {}],
         closedMarkets: [{}, {}],
-        sortOptions: 0, //0. Expiry Date, 1. Creation Date, 2. Volume, 3. Liquidity
-        expiryDateGreater: 0,
-        expiryDateLesser: 0,
-        creationDateGreater: 0,
-        creationDateLesser: 0,
+        sortOptions: 0, //0. Expiry Date, 1. Creation Date, 2. Volume
+        expiryDateGreater: "",
+        expiryDateLesser: "",
+        creationDateGreater: "",
+        creationDateLesser: "",
         volumeGreater: 0,
         volumeLesser: 0,
-        liquidityGreater: 0,
-        liquidityLesser: 0,
         ascendDescend: 0, //0. Descending, 1. Ascending
         marketType: [0, 1, 2], //0,1,2 (Open, Resolving, Closed)
         search: "",
+        createMarketCountry: "Country",
+        createMarketPosition: "Position",
+        createMarketExpiry: "",
+        createMarketDescription: "",
+        createMarketPeople: [],
+        createMarketPeopleField: "",
+        successCreateMessage: false,
+        warningCreateMessage: "",
     };
 
     updateFormFieldString = (evt) => {
@@ -73,6 +81,57 @@ export default class Markets extends React.Component {
         }
     };
 
+    submitCreation = async () => {
+        await axios
+            .post(API_URL + "/open_markets", {
+                position: this.state.createMarketPosition,
+                country: this.state.createMarketCountry,
+                description: this.state.createMarketDescription,
+                politicians: this.state.createMarketPeople,
+                timestampExpiry: new Date(this.state.createMarketExpiry).getTime(),
+            })
+            .catch((error) => {
+                this.setState({
+                    warningCreateMessage: error.response.data.message,
+                });
+            });
+        this.setState({
+            successCreateMessage: true,
+        });
+    };
+
+    renderCountryDropdown() {
+        let renderArray = [
+            <option key="country" disabled>
+                Country
+            </option>,
+        ];
+        for (let item of this.state.countryList) {
+            renderArray.push(
+                <option key={item} value={item}>
+                    {item}
+                </option>
+            );
+        }
+        return renderArray;
+    }
+
+    renderPositionDropdown() {
+        let renderArray = [
+            <option key="position" disabled>
+                Position
+            </option>,
+        ];
+        for (let item of this.state.positionList) {
+            renderArray.push(
+                <option key={item} value={item}>
+                    {item}
+                </option>
+            );
+        }
+        return renderArray;
+    }
+
     renderOpenMarkets() {
         let renderArray = [];
         for (let market of this.state.openMarkets) {
@@ -80,60 +139,62 @@ export default class Markets extends React.Component {
             let globalLiquidity = 0;
             renderArray.push(
                 <React.Fragment key={market._id}>
-                    <div className="card mb-3">
-                        <div className="card-body">
-                            <div className="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <span>
-                                        <i className="fa-solid fa-check-to-slot"></i>
-                                    </span>
-                                    <h5 className="card-title">
-                                        Next {market.position} of {market.country}
-                                    </h5>
-                                    <h6 className="card-subtitle mb-2 text-muted">Created: {new Date(market.timestampCreated).toDateString()}</h6>
-                                    <h6 className="card-subtitle mb-2 text-muted">Expiry: {new Date(market.timestampExpiry).toDateString()}</h6>
+                    <div className="col-12 align-items-stretch col-lg-6 col-xl-4">
+                        <div className="card mb-3">
+                            <div className="card-body">
+                                <div className="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span>
+                                            <i className="fa-solid fa-check-to-slot"></i>
+                                        </span>
+                                        <h5 className="card-title">
+                                            {market.position} of {market.country} {String.fromCodePoint("0x" + market.countryDetails[0].unicode1) + String.fromCodePoint("0x" + market.countryDetails[0].unicode2)}
+                                        </h5>
+                                        <h6 className="card-subtitle mb-2 text-muted">Created: {new Date(market.timestampCreated).toDateString()}</h6>
+                                        <h6 className="card-subtitle mb-2 text-muted">Expiry: {new Date(market.timestampExpiry).toDateString()}</h6>
+                                    </div>
+                                    <div>
+                                        <button
+                                            type="button"
+                                            className="btn btn-success"
+                                            onClick={() => {
+                                                this.props.updateParentDisplay("MarketDetails");
+                                                this.props.updateParentState("market_id", market._id);
+                                            }}
+                                        >
+                                            Go to Market
+                                        </button>
+                                    </div>
                                 </div>
-                                <div>
-                                    <button
-                                        type="button"
-                                        className="btn btn-success"
-                                        onClick={() => {
-                                            this.props.updateParentDisplay("MarketDetails");
-                                            this.props.updateParentState("market_id", market._id);
-                                        }}
-                                    >
-                                        Go to Market
-                                    </button>
+                                {(function () {
+                                    let renderArray = [];
+                                    for (let politicianEntry of market.politicians) {
+                                        let yesTokens = politicianEntry.yes;
+                                        let noTokens = politicianEntry.no;
+                                        let yesPrice = noTokens / (yesTokens + noTokens);
+                                        let noPrice = yesTokens / (yesTokens + noTokens);
+                                        globalVolume += politicianEntry.volume;
+                                        globalLiquidity += yesPrice * yesTokens * 2;
+                                        renderArray.push(
+                                            <div className="border-bottom d-flex align-items-center justify-content-between" key={politicianEntry.politician}>
+                                                <span className="card-text me-auto">{politicianEntry.politician}</span>
+                                                <span className="text-success me-2">Yes: {(yesPrice * 100).toFixed(0)}¢</span>
+                                                <span className="text-danger">No: {(noPrice * 100).toFixed(0)}¢</span>
+                                            </div>
+                                        );
+                                    }
+                                    return renderArray;
+                                })()}
+                                <div className="mt-2 d-flex align-items-center">
+                                    <i className="fa-solid fa-chart-column text-muted tooltipHTML">
+                                        <span className="tooltiptextHTML">Volume</span>
+                                    </i>
+                                    <span className="card-text text-muted">&nbsp;${globalVolume.toFixed(2)}&nbsp;</span>
+                                    <i className="fa-solid fa-water text-muted ms-3 tooltipHTML">
+                                        <span className="tooltiptextHTML">Liquidity</span>
+                                    </i>
+                                    <span className="card-text text-muted">&nbsp;${globalLiquidity.toFixed(2)}&nbsp;</span>
                                 </div>
-                            </div>
-                            {(function () {
-                                let renderArray = [];
-                                for (let politicianEntry of market.politicians) {
-                                    let yesTokens = politicianEntry.yes;
-                                    let noTokens = politicianEntry.no;
-                                    let yesPrice = noTokens / (yesTokens + noTokens);
-                                    let noPrice = yesTokens / (yesTokens + noTokens);
-                                    globalVolume += politicianEntry.volume;
-                                    globalLiquidity += yesPrice * yesTokens * 2;
-                                    renderArray.push(
-                                        <div className="border-bottom d-flex align-items-center justify-content-between" key={politicianEntry.politician}>
-                                            <span className="card-text me-auto">{politicianEntry.politician}</span>
-                                            <span className="text-success me-2">Yes: {(yesPrice * 100).toFixed(0)}¢</span>
-                                            <span className="text-danger">No: {(noPrice * 100).toFixed(0)}¢</span>
-                                        </div>
-                                    );
-                                }
-                                return renderArray;
-                            })()}
-                            <div className="mt-2 d-flex align-items-center">
-                                <i className="fa-solid fa-chart-column text-muted tooltipHTML">
-                                    <span className="tooltiptextHTML">Volume</span>
-                                </i>
-                                <span className="card-text text-muted">&nbsp;${globalVolume.toFixed(2)}&nbsp;</span>
-                                <i className="fa-solid fa-water text-muted ms-3 tooltipHTML">
-                                    <span className="tooltiptextHTML">Liquidity</span>
-                                </i>
-                                <span className="card-text text-muted">&nbsp;${globalLiquidity.toFixed(2)}&nbsp;</span>
                             </div>
                         </div>
                     </div>
@@ -143,17 +204,225 @@ export default class Markets extends React.Component {
         return renderArray;
     }
 
+    renderNewMarket() {
+        return (
+            <React.Fragment>
+                <div className="col-12 align-items-stretch col-lg-6 col-xl-4">
+                    <div className="card mb-3">
+                        <div className="card-body">
+                            <div className="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h3 className="card-title">Create Your Own Market</h3>
+                                    <div className="d-flex align-items-center">
+                                        <select className="form-select form-select-sm mb-2" name="createMarketPosition" onChange={this.updateFormFieldString} value={this.state.createMarketPosition}>
+                                            {this.renderPositionDropdown()}
+                                        </select>
+                                    </div>
+                                    <div className="d-flex align-items-center">
+                                        <select className="form-select form-select-sm mb-2" name="createMarketCountry" onChange={this.updateFormFieldString} value={this.state.createMarketCountry}>
+                                            {this.renderCountryDropdown()}
+                                        </select>
+                                    </div>
+                                    <div className="d-flex align-items-center input-group-sm mb-2">
+                                        <h6 className="card-subtitle text-muted">Expiry&nbsp;Date:&nbsp;</h6>
+                                        <input
+                                            className="form-control shadow-none"
+                                            type="date"
+                                            value={this.state.createMarketExpiry}
+                                            onChange={(evt) => {
+                                                this.updateFormFieldString(evt);
+                                            }}
+                                            name="createMarketExpiry"
+                                        ></input>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button
+                                        type="button"
+                                        className="btn btn-success"
+                                        disabled={!this.state.createMarketPeople.length || this.state.createMarketCountry === "Country" || this.state.createMarketPosition === "Position" || !this.state.createMarketExpiry}
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#createModal"
+                                    >
+                                        Create
+                                    </button>
+                                </div>
+                            </div>
+                            {/* Confirmation modal  */}
+                            <div className="modal fade" id="createModal" tabIndex="-1">
+                                <div className="modal-dialog">
+                                    <div className="modal-content">
+                                        <div className="modal-header">
+                                            <h5 className="modal-title">Please fill in the details of the market and confirm.</h5>
+                                            <button
+                                                type="button"
+                                                className="btn-close"
+                                                data-bs-dismiss="modal"
+                                                onClick={() => {
+                                                    this.setState({ successCreateMessage: false, warningCreateMessage: "" });
+                                                }}
+                                            ></button>
+                                        </div>
+                                        <div className="modal-body">
+                                            <div className="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                                                <strong>Opening Promotion: </strong>
+                                                All markets created will be seeded with an initial liquidity of $2000 per politician for free at a 50:50 ratio.
+                                                <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                            <div className="alert alert-success alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.successCreateMessage ? "block" : "none" }}>
+                                                <strong>The prediction market has been successfully created! </strong>
+                                                <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                            <div className="alert alert-danger alert-dismissible fade show mb-4" role="alert" style={{ display: this.state.warningCreateMessage ? "block" : "none" }}>
+                                                <strong>{this.state.warningCreateMessage}</strong>
+                                                <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                            <table className="table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Political Position </td>
+                                                        <td>{this.state.createMarketPosition}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Country </td>
+                                                        <td>{this.state.createMarketCountry}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Expiry Date </td>
+                                                        <td>{this.state.createMarketExpiry}</td>
+                                                    </tr>
+                                                    {(() => {
+                                                        let renderArray = [];
+                                                        let count = 0;
+                                                        for (let i of this.state.createMarketPeople) {
+                                                            count++;
+                                                            renderArray.push(
+                                                                <tr key={count}>
+                                                                    <td>Contenders </td>
+                                                                    <td>
+                                                                        {count}. {i}
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        }
+                                                        return renderArray;
+                                                    })()}
+                                                    <tr>
+                                                        <td>Description</td>
+                                                        <td>
+                                                            <div className="input-group">
+                                                                <textarea
+                                                                    style={{ minHeight: "300px" }}
+                                                                    className="form-control"
+                                                                    placeholder={`The contract that resolves to Yes shall be that which identifies the ${this.state.createMarketPosition} of the ${this.state.createMarketCountry} upon the Expiry Date listed.`}
+                                                                    value={this.state.createMarketDescription}
+                                                                    name="createMarketDescription"
+                                                                    onChange={(evt) => {
+                                                                        this.updateFormFieldString(evt);
+                                                                    }}
+                                                                ></textarea>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div className="modal-footer">
+                                            <button type="button" onClick={this.submitCreation} className="btn btn-success">
+                                                Create Prediction Market
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn btn-danger"
+                                                data-bs-dismiss="modal"
+                                                onClick={() => {
+                                                    this.setState({ successCreateMessage: false, warningCreateMessage: "" });
+                                                }}
+                                            >
+                                                Exit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Politicians List  */}
+                            <div className="border-bottom border-top d-flex align-items-center justify-content-between">
+                                <span className="card-text me-auto">Politicians</span>
+                            </div>
+                            {(() => {
+                                let renderArray = [];
+                                let count = 0;
+                                for (let i of this.state.createMarketPeople) {
+                                    count++;
+                                    renderArray.push(
+                                        <div className="border-bottom d-flex align-items-center justify-content-between" key={count}>
+                                            <span className="card-text me-auto">
+                                                {count} : {i}
+                                            </span>
+                                        </div>
+                                    );
+                                }
+                                return renderArray;
+                            })()}
+                            <div className="border-bottom d-flex align-items-center">
+                                <span className="card-text me-auto input-group-sm">
+                                    <input
+                                        className="form-control shadow-none me-2"
+                                        type="text"
+                                        placeholder="Add new politician name"
+                                        value={this.state.createMarketPeopleField}
+                                        onChange={(evt) => {
+                                            this.updateFormFieldString(evt);
+                                        }}
+                                        name="createMarketPeopleField"
+                                    ></input>
+                                </span>
+                                <button
+                                    type="button"
+                                    className="btn btn-success"
+                                    disabled={!this.state.createMarketPeopleField}
+                                    onClick={(evt) => {
+                                        this.setState({ createMarketPeople: [...this.state.createMarketPeople, this.state.createMarketPeopleField], createMarketPeopleField: "" });
+                                    }}
+                                >
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </React.Fragment>
+        );
+    }
+
     async componentDidMount() {
-        let response = await axios.get(API_URL + "/open_markets", {
+        let response1 = await axios.get(API_URL + "/open_markets", {
             params: {
                 sortOptions: this.state.sortOptions,
                 ascendDescend: this.state.ascendDescend,
                 marketType: this.state.marketType,
                 search: this.state.search,
+                expiryDateGreater: new Date(this.state.expiryDateGreater).getTime(),
+                expiryDateLesser: new Date(this.state.expiryDateLesser).getTime(),
+                creationDateGreater: new Date(this.state.creationDateGreater).getTime(),
+                creationDateLesser: new Date(this.state.creationDateLesser).getTime(),
+                volumeGreater: this.state.volumeGreater,
+                volumeLesser: this.state.volumeLesser,
             },
         });
         this.setState({
-            openMarkets: response.data.openMarkets,
+            openMarkets: response1.data.openMarkets,
+        });
+
+        // Country list
+        let response2 = await axios.get(API_URL + "/country");
+        this.setState({
+            countryList: response2.data.countryArray,
+        });
+        // Position list
+        let response3 = await axios.get(API_URL + "/position");
+        this.setState({
+            positionList: response3.data.positionArray,
         });
     }
 
@@ -164,6 +433,12 @@ export default class Markets extends React.Component {
                 ascendDescend: this.state.ascendDescend,
                 marketType: this.state.marketType,
                 search: this.state.search,
+                expiryDateGreater: new Date(this.state.expiryDateGreater).getTime(),
+                expiryDateLesser: new Date(this.state.expiryDateLesser).getTime(),
+                creationDateGreater: new Date(this.state.creationDateGreater).getTime(),
+                creationDateLesser: new Date(this.state.creationDateLesser).getTime(),
+                volumeGreater: this.state.volumeGreater,
+                volumeLesser: this.state.volumeLesser,
             },
         });
         this.setState({
@@ -271,24 +546,6 @@ export default class Markets extends React.Component {
                                     ></input>
                                     <label className="form-check-label ms-1" htmlFor="sortOptions2">
                                         Volume
-                                    </label>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="form-check">
-                                    <input
-                                        className="shadow-none form-check-input ms-1"
-                                        value={3}
-                                        checked={this.state.sortOptions === 3}
-                                        onChange={(evt) => {
-                                            this.updateFormFieldNumber(evt);
-                                        }}
-                                        type="radio"
-                                        name="sortOptions"
-                                        id="sortOptions3"
-                                    ></input>
-                                    <label className="form-check-label ms-1" htmlFor="sortOptions3">
-                                        Liquidity
                                     </label>
                                 </div>
                             </li>
@@ -447,6 +704,7 @@ export default class Markets extends React.Component {
                                 {/* Filters */}
                                 <div className="d-flex form-check align-items-center">
                                     <i className="fa-solid fa-greater-than-equal me-2"></i>
+                                    <i className="fas fa-dollar-sign me-2"></i>
                                     <input
                                         className="form-control shadow-none me-2"
                                         type="number"
@@ -459,6 +717,7 @@ export default class Markets extends React.Component {
                                 </div>
                                 <div className="d-flex form-check align-items-center">
                                     <i className="fa-solid fa-less-than-equal me-2"></i>
+                                    <i className="fas fa-dollar-sign me-2"></i>
                                     <input
                                         className="form-control shadow-none me-2"
                                         type="number"
@@ -470,40 +729,12 @@ export default class Markets extends React.Component {
                                     ></input>
                                 </div>
                             </li>
-                            <li>
-                                <span className="dropdown-item disabled">Filter By Liquidity</span>
-                                {/* Filters */}
-                                <div className="d-flex form-check align-items-center">
-                                    <i className="fa-solid fa-greater-than-equal me-2"></i>
-                                    <input
-                                        className="form-control shadow-none me-2"
-                                        type="number"
-                                        value={this.state.liquidityGreater}
-                                        onChange={(evt) => {
-                                            this.updateFormFieldString(evt);
-                                        }}
-                                        name="liquidityGreater"
-                                    ></input>
-                                </div>
-                                <div className="d-flex form-check align-items-center">
-                                    <i className="fa-solid fa-less-than-equal me-2"></i>
-                                    <input
-                                        className="form-control shadow-none me-2"
-                                        type="number"
-                                        value={this.state.liquidityLesser}
-                                        onChange={(evt) => {
-                                            this.updateFormFieldString(evt);
-                                        }}
-                                        name="liquidityLesser"
-                                    ></input>
-                                </div>
-                            </li>
                         </ul>
                     </div>
                     <input
                         className="form-control shadow-none"
                         type="search"
-                        placeholder="Search"
+                        placeholder="Search Prediction Markets"
                         value={this.state.search}
                         onChange={(evt) => {
                             this.updateFormFieldString(evt);
@@ -513,7 +744,10 @@ export default class Markets extends React.Component {
                 </div>
 
                 {/* Cards  */}
-                {this.renderOpenMarkets()}
+                <div className="row">
+                    {this.renderOpenMarkets()}
+                    {this.renderNewMarket()}
+                </div>
             </>
         );
     }
