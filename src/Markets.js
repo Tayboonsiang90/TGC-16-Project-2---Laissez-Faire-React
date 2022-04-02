@@ -9,22 +9,40 @@ export default class Markets extends React.Component {
         openMarkets: [],
         resolvingMarkets: [{}, {}],
         closedMarkets: [{}, {}],
-        sortOptions: 1, //1. Expiry Date, 2. Volume, 3. Liquidity
-        ascendDescend: 1, //1. Descending, 2. Ascending
-        marketType: [1, 2, 3], //1,2,3 (Open, Resolving, Closed)
+        sortOptions: 0, //0. Expiry Date, 1. Creation Date, 2. Volume, 3. Liquidity
+        expiryDateGreater: 0,
+        expiryDateLesser: 0,
+        creationDateGreater: 0,
+        creationDateLesser: 0,
+        volumeGreater: 0,
+        volumeLesser: 0,
+        liquidityGreater: 0,
+        liquidityLesser: 0,
+        ascendDescend: 0, //0. Descending, 1. Ascending
+        marketType: [0, 1, 2], //0,1,2 (Open, Resolving, Closed)
         search: "",
     };
 
     updateFormFieldString = (evt) => {
-        this.setState({
-            [evt.target.name]: evt.target.value,
-        });
+        this.setState(
+            {
+                [evt.target.name]: evt.target.value,
+            },
+            () => {
+                this.updateStateMarkets();
+            }
+        );
     };
 
     updateFormFieldNumber = (evt) => {
-        this.setState({
-            [evt.target.name]: Number(evt.target.value),
-        });
+        this.setState(
+            {
+                [evt.target.name]: Number(evt.target.value),
+            },
+            () => {
+                this.updateStateMarkets();
+            }
+        );
     };
 
     updateCheckboxNumber = (evt) => {
@@ -34,14 +52,24 @@ export default class Markets extends React.Component {
             let indexToRemove = this.state.marketType.findIndex((eachMarketType) => {
                 return eachMarketType === checkedNumber;
             });
-            this.setState({
-                marketType: [...this.state.marketType.slice(0, indexToRemove), ...this.state.marketType.slice(indexToRemove + 1)],
-            });
+            this.setState(
+                {
+                    marketType: [...this.state.marketType.slice(0, indexToRemove), ...this.state.marketType.slice(indexToRemove + 1)],
+                },
+                () => {
+                    this.updateStateMarkets();
+                }
+            );
         } //Case 2, not inside, checked
         else {
-            this.setState({
-                marketType: [...this.state.marketType, checkedNumber],
-            });
+            this.setState(
+                {
+                    marketType: [...this.state.marketType, checkedNumber],
+                },
+                () => {
+                    this.updateStateMarkets();
+                }
+            );
         }
     };
 
@@ -116,16 +144,37 @@ export default class Markets extends React.Component {
     }
 
     async componentDidMount() {
-        let response = await axios.get(API_URL + "/open_markets");
+        let response = await axios.get(API_URL + "/open_markets", {
+            params: {
+                sortOptions: this.state.sortOptions,
+                ascendDescend: this.state.ascendDescend,
+                marketType: this.state.marketType,
+                search: this.state.search,
+            },
+        });
         this.setState({
             openMarkets: response.data.openMarkets,
         });
     }
 
+    updateStateMarkets = async () => {
+        let response = await axios.get(API_URL + "/open_markets", {
+            params: {
+                sortOptions: this.state.sortOptions,
+                ascendDescend: this.state.ascendDescend,
+                marketType: this.state.marketType,
+                search: this.state.search,
+            },
+        });
+        this.setState({
+            openMarkets: response.data.openMarkets,
+        });
+    };
+
     render() {
         return (
             <>
-                {/* Carousel  */}
+                {/* Carousel */}
                 <div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
                     <div className="carousel-indicators">
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active"></button>
@@ -175,16 +224,16 @@ export default class Markets extends React.Component {
                                 <div className="form-check">
                                     <input
                                         className="shadow-none form-check-input ms-1"
-                                        value={1}
-                                        checked={this.state.sortOptions === 1}
+                                        value={0}
+                                        checked={this.state.sortOptions === 0}
                                         onChange={(evt) => {
                                             this.updateFormFieldNumber(evt);
                                         }}
                                         type="radio"
                                         name="sortOptions"
-                                        id="sortOptions1"
+                                        id="sortOptions0"
                                     ></input>
-                                    <label className="form-check-label ms-1" htmlFor="sortOptions1">
+                                    <label className="form-check-label ms-1" htmlFor="sortOptions0">
                                         Expiry Date
                                     </label>
                                 </div>
@@ -193,8 +242,8 @@ export default class Markets extends React.Component {
                                 <div className="form-check">
                                     <input
                                         className="shadow-none form-check-input ms-1"
-                                        value={2}
-                                        checked={this.state.sortOptions === 2}
+                                        value={1}
+                                        checked={this.state.sortOptions === 1}
                                         onChange={(evt) => {
                                             this.updateFormFieldNumber(evt);
                                         }}
@@ -211,8 +260,8 @@ export default class Markets extends React.Component {
                                 <div className="form-check">
                                     <input
                                         className="shadow-none form-check-input ms-1"
-                                        value={3}
-                                        checked={this.state.sortOptions === 3}
+                                        value={2}
+                                        checked={this.state.sortOptions === 2}
                                         onChange={(evt) => {
                                             this.updateFormFieldNumber(evt);
                                         }}
@@ -229,8 +278,8 @@ export default class Markets extends React.Component {
                                 <div className="form-check">
                                     <input
                                         className="shadow-none form-check-input ms-1"
-                                        value={4}
-                                        checked={this.state.sortOptions === 4}
+                                        value={3}
+                                        checked={this.state.sortOptions === 3}
                                         onChange={(evt) => {
                                             this.updateFormFieldNumber(evt);
                                         }}
@@ -243,8 +292,27 @@ export default class Markets extends React.Component {
                                     </label>
                                 </div>
                             </li>
+
                             <li>
                                 <span className="dropdown-item disabled">Ascending/Descending</span>
+                            </li>
+                            <li>
+                                <div className="form-check">
+                                    <input
+                                        className="shadow-none form-check-input ms-1"
+                                        value={0}
+                                        checked={this.state.ascendDescend === 0}
+                                        onChange={(evt) => {
+                                            this.updateFormFieldNumber(evt);
+                                        }}
+                                        type="radio"
+                                        name="ascendDescend"
+                                        id="ascendDescend1"
+                                    ></input>
+                                    <label className="form-check-label ms-1" htmlFor="ascendDescend1">
+                                        Ascending
+                                    </label>
+                                </div>
                             </li>
                             <li>
                                 <div className="form-check">
@@ -257,33 +325,32 @@ export default class Markets extends React.Component {
                                         }}
                                         type="radio"
                                         name="ascendDescend"
-                                        id="ascendDescend1"
+                                        id="ascendDescend2"
                                     ></input>
-                                    <label className="form-check-label ms-1" htmlFor="ascendDescend1">
+                                    <label className="form-check-label ms-1" htmlFor="ascendDescend2">
                                         Descending
                                     </label>
                                 </div>
                             </li>
                             <li>
+                                <span className="dropdown-item disabled">Show/Hide</span>
+                            </li>
+                            <li>
                                 <div className="form-check">
                                     <input
                                         className="shadow-none form-check-input ms-1"
-                                        value={2}
-                                        checked={this.state.ascendDescend === 2}
+                                        value={0}
+                                        checked={this.state.marketType.includes(0)}
                                         onChange={(evt) => {
-                                            this.updateFormFieldNumber(evt);
+                                            this.updateCheckboxNumber(evt);
                                         }}
-                                        type="radio"
-                                        name="ascendDescend"
-                                        id="ascendDescend2"
+                                        type="checkbox"
+                                        id="marketType0"
                                     ></input>
-                                    <label className="form-check-label ms-1" htmlFor="ascendDescend2">
-                                        Ascending
+                                    <label className="form-check-label ms-1" htmlFor="marketType0">
+                                        Open Markets
                                     </label>
                                 </div>
-                            </li>
-                            <li>
-                                <span className="dropdown-item disabled">Show/Hide</span>
                             </li>
                             <li>
                                 <div className="form-check">
@@ -295,10 +362,10 @@ export default class Markets extends React.Component {
                                             this.updateCheckboxNumber(evt);
                                         }}
                                         type="checkbox"
-                                        id="marketType"
+                                        id="marketType1"
                                     ></input>
-                                    <label className="form-check-label ms-1" htmlFor="marketType">
-                                        Open Markets
+                                    <label className="form-check-label ms-1" htmlFor="marketType1">
+                                        Resolving Markets
                                     </label>
                                 </div>
                             </li>
@@ -312,28 +379,123 @@ export default class Markets extends React.Component {
                                             this.updateCheckboxNumber(evt);
                                         }}
                                         type="checkbox"
-                                        id="marketType"
+                                        id="marketType2"
                                     ></input>
-                                    <label className="form-check-label ms-1" htmlFor="marketType">
-                                        Resolving Markets
+                                    <label className="form-check-label ms-1" htmlFor="marketType2">
+                                        Closed Markets
                                     </label>
                                 </div>
                             </li>
                             <li>
-                                <div className="form-check">
+                                <span className="dropdown-item disabled">Filter By Expiry Date</span>
+                                {/* Filters */}
+                                <div className="d-flex form-check align-items-center">
+                                    <i className="fa-solid fa-greater-than-equal me-2"></i>
                                     <input
-                                        className="shadow-none form-check-input ms-1"
-                                        value={3}
-                                        checked={this.state.marketType.includes(3)}
+                                        className="form-control shadow-none me-2"
+                                        type="date"
+                                        value={this.state.expiryDateGreater}
                                         onChange={(evt) => {
-                                            this.updateCheckboxNumber(evt);
+                                            this.updateFormFieldString(evt);
                                         }}
-                                        type="checkbox"
-                                        id="marketType"
+                                        name="expiryDateGreater"
                                     ></input>
-                                    <label className="form-check-label ms-1" htmlFor="marketType">
-                                        Closed Markets
-                                    </label>
+                                </div>
+                                <div className="d-flex form-check align-items-center">
+                                    <i className="fa-solid fa-less-than-equal me-2"></i>
+                                    <input
+                                        className="form-control shadow-none me-2"
+                                        type="date"
+                                        value={this.state.expiryDateLesser}
+                                        onChange={(evt) => {
+                                            this.updateFormFieldString(evt);
+                                        }}
+                                        name="expiryDateLesser"
+                                    ></input>
+                                </div>
+                            </li>
+                            <li>
+                                <span className="dropdown-item disabled">Filter By Creation Date</span>
+                                {/* Filters */}
+                                <div className="d-flex form-check align-items-center">
+                                    <i className="fa-solid fa-greater-than-equal me-2"></i>
+                                    <input
+                                        className="form-control shadow-none me-2"
+                                        type="date"
+                                        value={this.state.creationDateGreater}
+                                        onChange={(evt) => {
+                                            this.updateFormFieldString(evt);
+                                        }}
+                                        name="creationDateGreater"
+                                    ></input>
+                                </div>
+                                <div className="d-flex form-check align-items-center">
+                                    <i className="fa-solid fa-less-than-equal me-2"></i>
+                                    <input
+                                        className="form-control shadow-none me-2"
+                                        type="date"
+                                        value={this.state.creationDateLesser}
+                                        onChange={(evt) => {
+                                            this.updateFormFieldString(evt);
+                                        }}
+                                        name="creationDateLesser"
+                                    ></input>
+                                </div>
+                            </li>
+                            <li>
+                                <span className="dropdown-item disabled">Filter By Volume</span>
+                                {/* Filters */}
+                                <div className="d-flex form-check align-items-center">
+                                    <i className="fa-solid fa-greater-than-equal me-2"></i>
+                                    <input
+                                        className="form-control shadow-none me-2"
+                                        type="number"
+                                        value={this.state.volumeGreater}
+                                        onChange={(evt) => {
+                                            this.updateFormFieldString(evt);
+                                        }}
+                                        name="volumeGreater"
+                                    ></input>
+                                </div>
+                                <div className="d-flex form-check align-items-center">
+                                    <i className="fa-solid fa-less-than-equal me-2"></i>
+                                    <input
+                                        className="form-control shadow-none me-2"
+                                        type="number"
+                                        value={this.state.volumeLesser}
+                                        onChange={(evt) => {
+                                            this.updateFormFieldString(evt);
+                                        }}
+                                        name="volumeLesser"
+                                    ></input>
+                                </div>
+                            </li>
+                            <li>
+                                <span className="dropdown-item disabled">Filter By Liquidity</span>
+                                {/* Filters */}
+                                <div className="d-flex form-check align-items-center">
+                                    <i className="fa-solid fa-greater-than-equal me-2"></i>
+                                    <input
+                                        className="form-control shadow-none me-2"
+                                        type="number"
+                                        value={this.state.liquidityGreater}
+                                        onChange={(evt) => {
+                                            this.updateFormFieldString(evt);
+                                        }}
+                                        name="liquidityGreater"
+                                    ></input>
+                                </div>
+                                <div className="d-flex form-check align-items-center">
+                                    <i className="fa-solid fa-less-than-equal me-2"></i>
+                                    <input
+                                        className="form-control shadow-none me-2"
+                                        type="number"
+                                        value={this.state.liquidityLesser}
+                                        onChange={(evt) => {
+                                            this.updateFormFieldString(evt);
+                                        }}
+                                        name="liquidityLesser"
+                                    ></input>
                                 </div>
                             </li>
                         </ul>
