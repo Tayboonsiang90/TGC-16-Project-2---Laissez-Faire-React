@@ -141,7 +141,7 @@ export default class Markets extends React.Component {
                 <React.Fragment key={market._id}>
                     <div className="col-12 align-items-stretch col-lg-6 col-xl-4">
                         <div className="card mb-3">
-                            <div className="card-body">
+                            <div className="card-body" style={{ minHeight: "300px" }}>
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div>
                                         <span>
@@ -168,20 +168,31 @@ export default class Markets extends React.Component {
                                 </div>
                                 {(function () {
                                     let renderArray = [];
+                                    let count = 0;
                                     for (let politicianEntry of market.politicians) {
-                                        let yesTokens = politicianEntry.yes;
-                                        let noTokens = politicianEntry.no;
-                                        let yesPrice = noTokens / (yesTokens + noTokens);
-                                        let noPrice = yesTokens / (yesTokens + noTokens);
-                                        globalVolume += politicianEntry.volume;
-                                        globalLiquidity += yesPrice * yesTokens * 2;
-                                        renderArray.push(
-                                            <div className="border-bottom d-flex align-items-center justify-content-between" key={politicianEntry.politician}>
-                                                <span className="card-text me-auto">{politicianEntry.politician}</span>
-                                                <span className="text-success me-2">Yes: {(yesPrice * 100).toFixed(0)}¢</span>
-                                                <span className="text-danger">No: {(noPrice * 100).toFixed(0)}¢</span>
-                                            </div>
-                                        );
+                                        if (count < 3) {
+                                            count++;
+                                            let yesTokens = politicianEntry.yes;
+                                            let noTokens = politicianEntry.no;
+                                            let yesPrice = noTokens / (yesTokens + noTokens);
+                                            let noPrice = yesTokens / (yesTokens + noTokens);
+                                            globalVolume += politicianEntry.volume;
+                                            globalLiquidity += yesPrice * yesTokens * 2;
+                                            renderArray.push(
+                                                <div className="border-bottom d-flex align-items-center justify-content-between" key={politicianEntry.politician}>
+                                                    <span className="card-text me-auto">{politicianEntry.politician}</span>
+                                                    <span className="text-success me-2">Yes: {(yesPrice * 100).toFixed(0)}¢</span>
+                                                    <span className="text-danger">No: {(noPrice * 100).toFixed(0)}¢</span>
+                                                </div>
+                                            );
+                                        } else {
+                                            renderArray.push(
+                                                <div className="border-bottom d-flex align-items-center justify-content-between" key="more">
+                                                    <span className="card-text me-auto text-muted">+ {market.politicians.length - 3} more</span>
+                                                </div>
+                                            );
+                                            break;
+                                        }
                                     }
                                     return renderArray;
                                 })()}

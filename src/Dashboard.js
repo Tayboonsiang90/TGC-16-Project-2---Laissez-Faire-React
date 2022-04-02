@@ -73,7 +73,13 @@ export default class Dashboard extends React.Component {
             renderArray.push(
                 <tr className={item.type === "DEPOSIT" ? "table-success" : "table-danger"} key={item.timestamp}>
                     <th>{item.type}</th>
-                    <td>$ {item.quantity}</td>
+                    <td>
+                        $
+                        {item.quantity.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        })}
+                    </td>
                     <td>{dateString.toLocaleString()}</td>
                 </tr>
             );
@@ -105,7 +111,13 @@ export default class Dashboard extends React.Component {
                     <div className="card w-50">
                         <div className="card-body text-center">
                             <h1 className="card-title fancy">Account Balance</h1>
-                            <h3 className="card-subtitle mb-2">$&nbsp;{this.props.userSessionDetails.USD}</h3>
+                            <h3 className="card-subtitle mb-2">
+                                $&nbsp;
+                                {this.props.userSessionDetails.USD.toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                })}
+                            </h3>
                         </div>
                     </div>
                 </div>
@@ -247,7 +259,7 @@ export default class Dashboard extends React.Component {
                                         </h1>
                                         <h1 className="card-subtitle mb-2 fancy">&nbsp;Interesting Fact 1</h1>
                                     </div>
-                                    <h2 className="card-text">You created your account {new Date(new Date().getTime() - this.props.userSessionDetails.timestamp).getDay()} days ago.</h2>
+                                    <h2 className="card-text">You created your account {Math.floor((new Date().getTime() - this.props.userSessionDetails.timestamp) / (1000 * 60 * 60 * 24))} days ago.</h2>
                                 </div>
                             </div>
                             <div className="carousel-item">
@@ -259,7 +271,14 @@ export default class Dashboard extends React.Component {
                                         </h1>
                                         <h1 className="card-subtitle mb-2 fancy">&nbsp;Interesting Fact 2</h1>
                                     </div>
-                                    <h2 className="card-text">Your total lifetime deposits is $ {this.props.userSessionDetails.totalDeposited}. </h2>
+                                    <h2 className="card-text">
+                                        Your total lifetime deposits is ${" "}
+                                        {this.props.userSessionDetails.totalDeposited.toLocaleString(undefined, {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        })}
+                                        .{" "}
+                                    </h2>
                                 </div>
                             </div>
                             <div className="carousel-item">
@@ -271,7 +290,14 @@ export default class Dashboard extends React.Component {
                                         </h1>
                                         <h1 className="card-subtitle mb-2 fancy">&nbsp;Interesting Fact 3</h1>
                                     </div>
-                                    <h2 className="card-text">You total lifetime withdrawals is $ {this.props.userSessionDetails.totalWithdrew}. </h2>
+                                    <h2 className="card-text">
+                                        You total lifetime withdrawals is ${" "}
+                                        {this.props.userSessionDetails.totalWithdrew.toLocaleString(undefined, {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        })}
+                                        .{" "}
+                                    </h2>
                                 </div>
                             </div>
                             <div className="carousel-item">

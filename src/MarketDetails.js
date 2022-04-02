@@ -356,7 +356,10 @@ export default class Markets extends React.Component {
                         className="shadow-none btn btn-secondary w-100 mt-3"
                         name="submitButton"
                         onClick={this.submitLiquidityTransaction}
-                        disabled={this.state.addRemoveAmount <= 0 || this.state.addRemoveAmount > (this.state.addRemoveButton === "ADD" ? this.state.liquidityBalance : this.state.liquidityBalance)}
+                        disabled={
+                            this.state.addRemoveAmount <= 0 ||
+                            this.state.addRemoveAmount > (this.state.addRemoveButton === "ADD" ? Math.min(this.state.yesBalance, this.state.noBalance * (this.state.politicians[this.state.displayMarket].yes / this.state.politicians[this.state.displayMarket].no)) : this.state.liquidityBalance)
+                        }
                         data-bs-toggle="modal"
                         data-bs-target="#liquidityModal"
                     >

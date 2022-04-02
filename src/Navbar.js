@@ -45,7 +45,11 @@ export default class Navbar extends React.Component {
                     <li className="nav-item">
                         <span className="btn btn-outline-dark w-100 mb-1 border-0 disabled">
                             <i className="fa-solid fa-dollar-sign"></i>
-                            &nbsp;Available Balance: ${this.props.userSessionDetails.USD.toFixed(2)}
+                            &nbsp;Available Balance: $
+                            {this.props.userSessionDetails.USD.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            })}
                         </span>
                     </li>
                     <li className="nav-item">
