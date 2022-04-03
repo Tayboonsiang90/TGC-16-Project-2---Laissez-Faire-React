@@ -13,7 +13,8 @@ import NewMarket from "./NewMarket";
 import Portfolio from "./Portfolio";
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8888";
+// const API_URL = "https://project-2-express.herokuapp.com";
+const API_URL = "https://project-2-express.herokuapp.com";
 
 class App extends React.Component {
     state = {
@@ -112,7 +113,7 @@ class App extends React.Component {
         } else if (this.state.display === "Leaderboard") {
             return (
                 <React.Fragment>
-                    <Leaderboard updateParentState={this.updateParentState} updateParentDisplay={this.updateParentDisplay} />
+                    <Leaderboard userSessionDetails={this.state.userSessionDetails} updateParentState={this.updateParentState} updateParentDisplay={this.updateParentDisplay} />
                 </React.Fragment>
             );
         } else if (this.state.display === "Dashboard") {

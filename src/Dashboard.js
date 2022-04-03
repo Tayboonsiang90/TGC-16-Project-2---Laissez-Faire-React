@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { toHaveDisplayValue } from "@testing-library/jest-dom/dist/matchers";
 
-const API_URL = "http://127.0.0.1:8888";
+const API_URL = "https://project-2-express.herokuapp.com";
 
 export default class Dashboard extends React.Component {
     state = {

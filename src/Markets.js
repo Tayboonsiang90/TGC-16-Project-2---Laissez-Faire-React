@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8888";
+const API_URL = "https://project-2-express.herokuapp.com";
 
 export default class Markets extends React.Component {
     state = {
@@ -467,7 +467,7 @@ export default class Markets extends React.Component {
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
                     </div>
-                    <div className="carousel-inner">
+                    <div className="carousel-inner debug" style={{ maxHeight: "400px" }}>
                         <div className="carousel-item position-relative active">
                             <img src="https://http.cat/400" className="d-block w-100" alt="Meaningful Text"></img>
                             <div className="position-absolute top-50 start-50 translate-middle text-center w-100" style={{ background: "rgba(0, 0, 0, 0.65)", color: "rgba(247,147,26)" }}>

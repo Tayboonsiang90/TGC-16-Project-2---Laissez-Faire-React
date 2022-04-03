@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8888";
+const API_URL = "https://project-2-express.herokuapp.com";
 
 export default class Markets extends React.Component {
     state = {
@@ -80,13 +80,12 @@ export default class Markets extends React.Component {
             successBuySellMessage: true,
         });
 
-        this.props.updateSessionState();
-
         setTimeout(
             function () {
+                this.props.updateSessionState();
                 this.updateOpenMarketsState();
             }.bind(this),
-            100
+            300
         );
     };
 
@@ -160,6 +159,13 @@ export default class Markets extends React.Component {
                         onClick={(e) => {
                             this.onEventNumber(e);
                             this.updateYesNoBalances(e);
+                            setTimeout(
+                                function () {
+                                    this.props.updateSessionState();
+                                    this.updateOpenMarketsState();
+                                }.bind(this),
+                                300
+                            );
                         }}
                     >
                         <div className="d-flex align-items-center justify-content-between ">
@@ -412,6 +418,40 @@ export default class Markets extends React.Component {
                 </div>
             </>
         );
+    }
+
+    renderTradeHistory() {
+        let renderArray = [];
+
+        for (let item of this.state.orderHistory) {
+            renderArray.push(
+                <tr key={item.timestamp}>
+                    <th>{item.type === "TRADE" ? item.buyOrSell : item.type}</th>
+                    <td>
+                        {(item.type === "TRADE" ? (item.yesOrNo === "YES" ? item.quantity : 0) : item.type === "MINT" || item.type === "REDEEM" ? item.quantity : item.quantityYes).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        })}
+                    </td>
+                    <td>
+                        {(item.type === "TRADE" ? (item.yesOrNo === "NO" ? item.quantity : 0) : item.type === "MINT" || item.type === "REDEEM" ? item.quantity : item.quantityNo).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        })}
+                    </td>
+                    <td>
+                        $
+                        {(item.type === "TRADE" ? item.quantityInUSD : item.type === "MINT" || item.type === "REDEEM" ? item.quantity : "-").toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        })}
+                    </td>
+                    <td>{new Date(item.timestamp).toLocaleString()}</td>
+                </tr>
+            );
+        }
+
+        return renderArray;
     }
 
     liquidityDetails = () => {
@@ -937,6 +977,37 @@ export default class Markets extends React.Component {
             timestampCreated: response1.data.openMarkets[0].timestampCreated,
             timestampExpiry: response1.data.openMarkets[0].timestampExpiry,
         });
+
+        //Compute global liquidity and global volume
+        let globalVolume = 0;
+        let globalLiquidity = 0;
+        for (let politicianEntry of this.state.politicians) {
+            let yesTokens = politicianEntry.yes;
+            let noTokens = politicianEntry.no;
+            let yesPrice = noTokens / (yesTokens + noTokens);
+            globalVolume += politicianEntry.volume;
+            globalLiquidity += yesPrice * yesTokens * 2;
+        }
+        this.setState({
+            globalLiquidity: globalLiquidity,
+            globalVolume: globalVolume,
+        });
+
+        //Pull yes no tokens for current market
+        let market_id = this.state.politicians[this.state.displayMarket].market_id;
+        let response2 = await axios.get(API_URL + "/balances/" + market_id + "/" + this.props.userSessionDetails._id);
+
+        this.setState({
+            yesBalance: response2.data.balances.yes,
+            noBalance: response2.data.balances.no,
+            liquidityBalance: response2.data.balances.liquidityShares,
+        });
+
+        //Pull Order History tokens for market 0
+        let response3 = await axios.get(API_URL + "/order_history/" + market_id + "/" + this.props.userSessionDetails._id);
+        this.setState({
+            orderHistory: response3.data,
+        });
     }
 
     render() {
@@ -971,7 +1042,24 @@ export default class Markets extends React.Component {
                         </div>
                         <div className="mt-4">{this.renderPoliticianMarkets()}</div>
                         <img className="img-fluid mt-4" src="https://www.presentationpoint.com/wp-content/uploads/2018/12/MS-Graph-in-PowerPoint-inserted-graph.jpg"></img>
+                        {/* Rules and Details  */}
+                        <h1 className="ms-2 mt-3">Rules and Details</h1>
                         <p>{this.state.description}</p>
+                        <p>On expiry date, the adminstrators of Laissez Faire reserve the sole authority to judge the settlement of a market. In case of any ambiguity or uncertainty, there may be a delay in settlement.</p>
+                        {/* Trade History  */}
+                        <h1 className="ms-2 mt-3">Trade History</h1>
+                        <table className="table table-striped w-100">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Transaction Type</th>
+                                    <th scope="col">Yes quantity</th>
+                                    <th scope="col">No quantity</th>
+                                    <th scope="col">USD Value</th>
+                                    <th scope="col">Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>{this.renderTradeHistory()}</tbody>
+                        </table>
                     </div>
                     <div className="mt-5 col-12 col-lg-4">{this.renderSidebar()}</div>
                 </div>

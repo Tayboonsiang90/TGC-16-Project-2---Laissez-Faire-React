@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8888";
+const API_URL = "https://project-2-express.herokuapp.com";
 
 export default class Signup extends React.Component {
     state = {
@@ -104,6 +104,11 @@ export default class Signup extends React.Component {
 
                                         <div className="alert alert-success alert-dismissible fade show mb-4" role="alert">
                                             <strong>Limited Time Offer:</strong> Sign up now for bonus credits of $1000.
+                                            <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+
+                                        <div className="alert alert-warning alert-dismissible fade show mb-4" role="alert">
+                                            <strong>Security Warning:</strong> Passwords are not encrypted and stored in your cookies! Do not re-use passwords!
                                             <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
                                         </div>
 
