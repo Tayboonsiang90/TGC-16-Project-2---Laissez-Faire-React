@@ -5,6 +5,7 @@
 ### (French) "let people do as they choose"
 
 ## URL to deployed app
+https://6249dfbb20abb618c1c11a46--zesty-licorice-7fe033.netlify.app/
 
 ## Summary
 
