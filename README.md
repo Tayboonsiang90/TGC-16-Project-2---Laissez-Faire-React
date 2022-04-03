@@ -89,9 +89,10 @@ Dan, 45 is unsatisfied by the interest on the fixed deposit account his bank giv
 9. Must be able to add a prediction market of your own.
 10. At expiry date, the adminstrator can see those markets on a dashboard to add an answer and dissolve.
 
-**Market Making Algorithm:** At the core of the market mechanism is a constant product automated market maker, whose use is popularized by Uniswap. A simple formula x\*y = k governs the trading of x against y where k is invariant (except when liquidity is added or removed). To bootstrap liquidity and usage, the platform is using "startup funds" to boostrap $30k for every prediction market created at a 50:50 ratio.
+**Market Making Algorithm:** At the core of the market mechanism is a constant product automated market maker, whose use is popularized by Uniswap. A simple formula x\*y = k governs the trading of x against y where k is invariant (except when liquidity is added or removed). To bootstrap liquidity and usage, the platform is using "startup funds" to boostrap $100 for every prediction market created at a 50:50 ratio.
 
 For more indepth details: https://research.paradigm.xyz/amm-price-impact
+https://xord.com/research/curve-stableswap-a-comprehensive-mathematical-guide/
 
 ## Further Project Work
 
