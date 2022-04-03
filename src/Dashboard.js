@@ -1,7 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
-import { toHaveDisplayValue } from "@testing-library/jest-dom/dist/matchers";
 
 const API_URL = "https://project-2-express.herokuapp.com";
 
