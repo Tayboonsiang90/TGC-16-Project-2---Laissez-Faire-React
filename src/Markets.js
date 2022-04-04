@@ -83,7 +83,7 @@ export default class Markets extends React.Component {
                     marketType: [...this.state.marketType, checkedNumber],
                 },
                 () => {
-                    this.updateStateMarkets();
+                    this.updateStateMarkets(); //test branch
                 }
             );
         }
