@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const API_URL = "https://project-2-express.herokuapp.com";
+const API_URL = "http://127.0.0.1:8888";
 
 export default class Signup extends React.Component {
     state = {
@@ -51,31 +51,32 @@ export default class Signup extends React.Component {
                 warningMessage: "Your passwords do not match. Please try again.",
             });
         } else {
-            await axios
-                .post(API_URL + "/signup", {
+            try {
+                await axios.post(API_URL + "/signup", {
                     email: this.state.email,
                     password: this.state.password,
                     name: this.state.name,
                     country: this.state.country,
                     dateOfBirth: this.state.dateOfBirth,
-                })
-                .catch((error) => {
-                    this.setState({
-                        warningMessage: error.response.data.message,
-                    });
                 });
-            let response = await axios.get(API_URL + "/login", {
-                params: {
-                    email: this.state.email,
-                    password: this.state.password,
-                },
-            });
-            //store in cookies
-            document.cookie = JSON.stringify(response.data.message);
-            //update parent state variables
-            this.props.updateParentState("userSessionDetails", response.data.message);
-            //redirect to markets
-            this.props.updateParentDisplay("Markets");
+
+                let response = await axios.get(API_URL + "/login", {
+                    params: {
+                        email: this.state.email,
+                        password: this.state.password,
+                    },
+                });
+                //store in cookies
+                document.cookie = JSON.stringify(response.data.message);
+                //update parent state variables
+                this.props.updateParentState("userSessionDetails", response.data.message);
+                //redirect to markets
+                this.props.updateParentDisplay("Markets");
+            } catch (error) {
+                this.setState({
+                    warningMessage: error.response.data.message,
+                });
+            }
         }
     };
 

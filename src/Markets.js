@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const API_URL = "https://project-2-express.herokuapp.com";
+const API_URL = "http://127.0.0.1:8888";
 
 export default class Markets extends React.Component {
     state = {
@@ -29,6 +29,14 @@ export default class Markets extends React.Component {
         createMarketPeopleField: "",
         successCreateMessage: false,
         warningCreateMessage: "",
+    };
+
+    //Because windows refuses to support political flags, have to use a png. to replace emojis
+    flagemojiToPNG = (flag) => {
+        var countryCode = Array.from(flag, (codeUnit) => codeUnit.codePointAt())
+            .map((char) => String.fromCharCode(char - 127397).toLowerCase())
+            .join("");
+        return <img src={`https://flagcdn.com/24x18/${countryCode}.png`} alt="flag" />;
     };
 
     updateFormFieldString = (evt) => {
@@ -82,22 +90,23 @@ export default class Markets extends React.Component {
     };
 
     submitCreation = async () => {
-        await axios
-            .post(API_URL + "/open_markets", {
+        try {
+            await axios.post(API_URL + "/open_markets", {
                 position: this.state.createMarketPosition,
                 country: this.state.createMarketCountry,
                 description: this.state.createMarketDescription,
                 politicians: this.state.createMarketPeople,
                 timestampExpiry: new Date(this.state.createMarketExpiry).getTime(),
-            })
-            .catch((error) => {
-                this.setState({
-                    warningCreateMessage: error.response.data.message,
-                });
             });
-        this.setState({
-            successCreateMessage: true,
-        });
+
+            this.setState({
+                successCreateMessage: true,
+            });
+        } catch (error) {
+            this.setState({
+                warningCreateMessage: error.response.data.message,
+            });
+        }
     };
 
     renderCountryDropdown() {
@@ -140,63 +149,65 @@ export default class Markets extends React.Component {
             renderArray.push(
                 <React.Fragment key={market._id}>
                     <div className="col-12 align-items-stretch col-lg-6 col-xl-4">
-                        <div className="card mb-3">
-                            <div className="card-body" style={{ minHeight: "300px" }}>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div>
-                                        <span>
-                                            <i className="fa-solid fa-check-to-slot"></i>
-                                        </span>
-                                        <h5 className="card-title">
-                                            {market.position} of {market.country} {String.fromCodePoint("0x" + market.countryDetails[0].unicode1) + String.fromCodePoint("0x" + market.countryDetails[0].unicode2)}
-                                        </h5>
-                                        <h6 className="card-subtitle mb-2 text-muted">Created: {new Date(market.timestampCreated).toDateString()}</h6>
-                                        <h6 className="card-subtitle mb-2 text-muted">Expiry: {new Date(market.timestampExpiry).toDateString()}</h6>
+                        <div className="card mb-3" style={market.timestampExpiry <= new Date().getTime() ? { backgroundColor: "#ffffe6" } : { backgroundColor: "#e6ffe6" }}>
+                            <div className="card-body  d-flex flex-column justify-content-between" style={{ minHeight: "300px" }}>
+                                <div className="">
+                                    <div className="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <span>
+                                                <i className="fa-solid fa-check-to-slot"></i>
+                                            </span>
+                                            <h5 className="card-title">
+                                                {market.position} of {market.country} {this.flagemojiToPNG(String.fromCodePoint("0x" + market.countryDetails[0].unicode1) + String.fromCodePoint("0x" + market.countryDetails[0].unicode2))}
+                                            </h5>
+                                            <h6 className="card-subtitle mb-2 text-muted">Created: {new Date(market.timestampCreated).toDateString()}</h6>
+                                            <h6 className="card-subtitle mb-2 text-muted">Expiry: {new Date(market.timestampExpiry).toDateString()}</h6>
+                                        </div>
+                                        <div>
+                                            <button
+                                                type="button"
+                                                className="btn btn-success ms-4"
+                                                onClick={() => {
+                                                    this.props.updateParentDisplay("MarketDetails");
+                                                    this.props.updateParentState("market_id", market._id);
+                                                }}
+                                            >
+                                                Trade
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <button
-                                            type="button"
-                                            className="btn btn-success"
-                                            onClick={() => {
-                                                this.props.updateParentDisplay("MarketDetails");
-                                                this.props.updateParentState("market_id", market._id);
-                                            }}
-                                        >
-                                            Go to Market
-                                        </button>
-                                    </div>
-                                </div>
-                                {(function () {
-                                    let renderArray = [];
-                                    let count = 0;
-                                    for (let politicianEntry of market.politicians) {
-                                        if (count < 3) {
-                                            count++;
-                                            let yesTokens = politicianEntry.yes;
-                                            let noTokens = politicianEntry.no;
-                                            let yesPrice = noTokens / (yesTokens + noTokens);
-                                            let noPrice = yesTokens / (yesTokens + noTokens);
-                                            globalVolume += politicianEntry.volume;
-                                            globalLiquidity += yesPrice * yesTokens * 2;
-                                            renderArray.push(
-                                                <div className="border-bottom d-flex align-items-center justify-content-between" key={politicianEntry.politician}>
-                                                    <span className="card-text me-auto">{politicianEntry.politician}</span>
-                                                    <span className="text-success me-2">Yes: {(yesPrice * 100).toFixed(0)}¢</span>
-                                                    <span className="text-danger">No: {(noPrice * 100).toFixed(0)}¢</span>
-                                                </div>
-                                            );
-                                        } else {
-                                            renderArray.push(
-                                                <div className="border-bottom d-flex align-items-center justify-content-between" key="more">
-                                                    <span className="card-text me-auto text-muted">+ {market.politicians.length - 3} more</span>
-                                                </div>
-                                            );
-                                            break;
+                                    {(function () {
+                                        let renderArray = [];
+                                        let count = 0;
+                                        for (let politicianEntry of market.politicians) {
+                                            if (count < 3) {
+                                                count++;
+                                                let yesTokens = politicianEntry.yes;
+                                                let noTokens = politicianEntry.no;
+                                                let yesPrice = noTokens / (yesTokens + noTokens);
+                                                let noPrice = yesTokens / (yesTokens + noTokens);
+                                                globalVolume += politicianEntry.volume;
+                                                globalLiquidity += yesPrice * yesTokens * 2;
+                                                renderArray.push(
+                                                    <div className="border-bottom d-flex align-items-center justify-content-between" key={politicianEntry.politician}>
+                                                        <span className="card-text me-auto">{politicianEntry.politician}</span>
+                                                        <span className="text-success me-2">Yes: {(yesPrice * 100).toFixed(0)}¢</span>
+                                                        <span className="text-danger">No: {(noPrice * 100).toFixed(0)}¢</span>
+                                                    </div>
+                                                );
+                                            } else {
+                                                renderArray.push(
+                                                    <div className="border-bottom d-flex align-items-center justify-content-between" key="more">
+                                                        <span className="card-text me-auto text-muted">+ {market.politicians.length - 3} more</span>
+                                                    </div>
+                                                );
+                                                break;
+                                            }
                                         }
-                                    }
-                                    return renderArray;
-                                })()}
-                                <div className="mt-2 d-flex align-items-center">
+                                        return renderArray;
+                                    })()}
+                                </div>
+                                <div className="mt-2 d-flex align-items-center ">
                                     <i className="fa-solid fa-chart-column text-muted tooltipHTML">
                                         <span className="tooltiptextHTML">Volume</span>
                                     </i>
@@ -220,9 +231,9 @@ export default class Markets extends React.Component {
             <React.Fragment>
                 <div className="col-12 align-items-stretch col-lg-6 col-xl-4">
                     <div className="card mb-3">
-                        <div className="card-body">
-                            <div className="d-flex align-items-center justify-content-between">
-                                <div>
+                        <div className="card-body" style={{ minHeight: "300px" }}>
+                            <div className=" d-flex align-items-center justify-content-between">
+                                <div className=" col-9">
                                     <h3 className="card-title">Create Your Own Market</h3>
                                     <div className="d-flex align-items-center">
                                         <select className="form-select form-select-sm mb-2" name="createMarketPosition" onChange={this.updateFormFieldString} value={this.state.createMarketPosition}>
@@ -247,7 +258,7 @@ export default class Markets extends React.Component {
                                         ></input>
                                     </div>
                                 </div>
-                                <div>
+                                <div className="">
                                     <button
                                         type="button"
                                         className="btn btn-success"
@@ -357,7 +368,7 @@ export default class Markets extends React.Component {
                                 </div>
                             </div>
                             {/* Politicians List  */}
-                            <div className="border-bottom border-top d-flex align-items-center justify-content-between">
+                            <div className="border-bottom border-top d-flex align-items-center flex-row">
                                 <span className="card-text me-auto">Politicians</span>
                             </div>
                             {(() => {
@@ -375,7 +386,7 @@ export default class Markets extends React.Component {
                                 }
                                 return renderArray;
                             })()}
-                            <div className="border-bottom d-flex align-items-center">
+                            <div className="d-flex flex-row align-items-center">
                                 <span className="card-text me-auto input-group-sm">
                                     <input
                                         className="form-control shadow-none me-2"
@@ -467,7 +478,7 @@ export default class Markets extends React.Component {
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
                     </div>
-                    <div className="carousel-inner debug" style={{ maxHeight: "400px" }}>
+                    <div className="carousel-inner " style={{ maxHeight: "400px" }}>
                         <div className="carousel-item position-relative active">
                             <img src="https://http.cat/400" className="d-block w-100" alt="Meaningful Text"></img>
                             <div className="position-absolute top-50 start-50 translate-middle text-center w-100" style={{ background: "rgba(0, 0, 0, 0.65)", color: "rgba(247,147,26)" }}>
@@ -756,8 +767,8 @@ export default class Markets extends React.Component {
 
                 {/* Cards  */}
                 <div className="row">
-                    {this.renderOpenMarkets()}
                     {this.renderNewMarket()}
+                    {this.renderOpenMarkets()}
                 </div>
             </>
         );

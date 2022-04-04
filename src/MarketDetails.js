@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const API_URL = "https://project-2-express.herokuapp.com";
+const API_URL = "http://127.0.0.1:8888";
 
 export default class Markets extends React.Component {
     state = {
@@ -65,20 +65,22 @@ export default class Markets extends React.Component {
     };
 
     submitTransaction = async () => {
-        await axios
-            .put(API_URL + "/trade/" + this.state.politicians[this.state.displayMarket].market_id + "/" + this.props.userSessionDetails._id, {
+        try {
+            await axios.put(API_URL + "/trade/" + this.state.politicians[this.state.displayMarket].market_id + "/" + this.props.userSessionDetails._id, {
                 buyOrSell: this.state.buySellButton,
                 yesOrNo: this.state.yesNoButton,
                 amount: this.state.amount,
-            })
-            .catch((error) => {
-                this.setState({
-                    warningBuySellMessage: error.response.data.message,
-                });
             });
-        this.setState({
-            successBuySellMessage: true,
-        });
+            this.setState({
+                successBuySellMessage: true,
+            });
+        } catch (error) {
+            this.setState({
+                warningBuySellMessage: error.response.data.message,
+            });
+        }
+
+        this.props.updateSessionState();
 
         setTimeout(
             function () {
@@ -90,19 +92,19 @@ export default class Markets extends React.Component {
     };
 
     submitMintRedeemTransaction = async () => {
-        await axios
-            .put(API_URL + "/mint_redeem/" + this.state.politicians[this.state.displayMarket].market_id + "/" + this.props.userSessionDetails._id, {
+        try {
+            await axios.put(API_URL + "/mint_redeem/" + this.state.politicians[this.state.displayMarket].market_id + "/" + this.props.userSessionDetails._id, {
                 mintOrRedeem: this.state.mintRedeemButton,
                 amount: this.state.mintRedeemAmount,
-            })
-            .catch((error) => {
-                this.setState({
-                    warningMintRedeemMessage: error.response.data.message,
-                });
             });
-        this.setState({
-            successMintRedeemMessage: true,
-        });
+            this.setState({
+                successMintRedeemMessage: true,
+            });
+        } catch (error) {
+            this.setState({
+                warningMintRedeemMessage: error.response.data.message,
+            });
+        }
 
         this.props.updateSessionState();
 
@@ -115,19 +117,19 @@ export default class Markets extends React.Component {
     };
 
     submitAddRemoveTransaction = async () => {
-        await axios
-            .put(API_URL + "/liquidity/" + this.state.politicians[this.state.displayMarket].market_id + "/" + this.props.userSessionDetails._id, {
+        try {
+            await axios.put(API_URL + "/liquidity/" + this.state.politicians[this.state.displayMarket].market_id + "/" + this.props.userSessionDetails._id, {
                 addOrRemove: this.state.addRemoveButton,
                 amount: this.state.addRemoveAmount,
-            })
-            .catch((error) => {
-                this.setState({
-                    warningAddRemoveMessage: error.response.data.message,
-                });
             });
-        this.setState({
-            successAddRemoveMessage: true,
-        });
+            this.setState({
+                successAddRemoveMessage: true,
+            });
+        } catch (error) {
+            this.setState({
+                warningAddRemoveMessage: error.response.data.message,
+            });
+        }
 
         this.props.updateSessionState();
 
@@ -193,21 +195,31 @@ export default class Markets extends React.Component {
     }
 
     renderSidebar() {
-        return (
-            <React.Fragment>
-                <div className="border border-5 p-3 border-warning">
-                    <div className="mt-2 border-bottom border-warning border-5 pb-4 d-flex align-items-center justify-content-evenly">
-                        <button type="button" className={"shadow-none btn btn-outline-dark w-100" + (this.state.tradeLiquidityButton === "TRADE" ? " active" : "")} data-bs-toggle="button" name="tradeLiquidityButton" value="TRADE" onClick={this.onEventString}>
-                            TRADE
-                        </button>
-                        <button type="button" className={"shadow-none btn btn-outline-dark w-100" + (this.state.tradeLiquidityButton === "LIQUIDITY" ? " active" : "")} data-bs-toggle="button" name="tradeLiquidityButton" value="LIQUIDITY" onClick={this.onEventString}>
-                            LIQUIDITY
-                        </button>
+        if (this.state.timestampExpiry >= new Date().getTime()) {
+            return (
+                <React.Fragment>
+                    <div className="border border-5 p-3 border-warning">
+                        <div className="mt-2 border-bottom border-warning border-5 pb-4 d-flex align-items-center justify-content-evenly">
+                            <button type="button" className={"shadow-none btn btn-outline-dark w-100" + (this.state.tradeLiquidityButton === "TRADE" ? " active" : "")} data-bs-toggle="button" name="tradeLiquidityButton" value="TRADE" onClick={this.onEventString}>
+                                TRADE
+                            </button>
+                            <button type="button" className={"shadow-none btn btn-outline-dark w-100" + (this.state.tradeLiquidityButton === "LIQUIDITY" ? " active" : "")} data-bs-toggle="button" name="tradeLiquidityButton" value="LIQUIDITY" onClick={this.onEventString}>
+                                LIQUIDITY
+                            </button>
+                        </div>
+                        {this.state.tradeLiquidityButton === "TRADE" ? this.renderTradeSidebar() : this.renderLiquiditySidebar()}
                     </div>
-                    {this.state.tradeLiquidityButton === "TRADE" ? this.renderTradeSidebar() : this.renderLiquiditySidebar()}
-                </div>
-            </React.Fragment>
-        );
+                </React.Fragment>
+            );
+        } else {
+            return (
+                <React.Fragment>
+                    <div className="border border-5 p-3 border-warning">
+                        <h1> This market has reached settlement date and is being resolved.</h1>
+                    </div>
+                </React.Fragment>
+            );
+        }
     }
 
     renderLiquiditySidebar() {
