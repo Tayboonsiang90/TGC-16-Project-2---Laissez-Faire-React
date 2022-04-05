@@ -195,7 +195,7 @@ export default class Markets extends React.Component {
     }
 
     renderSidebar() {
-        if (this.state.timestampExpiry >= new Date().getTime()) {
+        if (this.state.timestampExpiry > new Date().getTime()) {
             return (
                 <React.Fragment>
                     <div className="border border-5 p-3 border-warning">
@@ -211,11 +211,19 @@ export default class Markets extends React.Component {
                     </div>
                 </React.Fragment>
             );
+        } else if (this.state.timestampExpiry <= new Date().getTime() && this.state.type === "open") {
+            return (
+                <React.Fragment>
+                    <div className="border border-5 p-3 border-warning">
+                        <h1> This market has reached settlement date and is being resolved. </h1>
+                    </div>
+                </React.Fragment>
+            );
         } else {
             return (
                 <React.Fragment>
                     <div className="border border-5 p-3 border-warning">
-                        <h1> This market has reached settlement date and is being resolved.</h1>
+                        <h1> This market has reached settlement date and has been resolved. All contracts have been settled and paid. </h1>
                     </div>
                 </React.Fragment>
             );

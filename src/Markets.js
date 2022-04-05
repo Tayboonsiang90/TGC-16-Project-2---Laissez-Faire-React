@@ -9,8 +9,6 @@ export default class Markets extends React.Component {
         countryList: [],
         positionList: [],
         openMarkets: [],
-        resolvingMarkets: [{}, {}],
-        closedMarkets: [{}, {}],
         sortOptions: 0, //0. Expiry Date, 1. Creation Date, 2. Volume
         expiryDateGreater: "",
         expiryDateLesser: "",
@@ -19,7 +17,7 @@ export default class Markets extends React.Component {
         volumeGreater: 0,
         volumeLesser: 0,
         ascendDescend: 0, //0. Descending, 1. Ascending
-        marketType: [0, 1, 2], //0,1,2 (Open, Resolving, Closed)
+        marketType: [0], //0,1,2 (Open, Resolving, Closed)
         search: "",
         createMarketCountry: "Country",
         createMarketPosition: "Position",
@@ -146,85 +144,95 @@ export default class Markets extends React.Component {
         for (let market of this.state.openMarkets) {
             let globalVolume = 0;
             let globalLiquidity = 0;
-            renderArray.push(
-                <React.Fragment key={market._id}>
-                    <div className="col-12 align-items-stretch col-lg-6 col-xl-4">
-                        <div className="card mb-3" style={market.timestampExpiry <= new Date().getTime() ? { backgroundColor: "#ffffe6" } : { backgroundColor: "#e6ffe6" }}>
-                            <div className="card-body  d-flex flex-column justify-content-between" style={{ minHeight: "300px" }}>
-                                <div className="">
-                                    <div className="d-flex align-items-center justify-content-between">
-                                        <div>
-                                            <span>
-                                                <i className="fa-solid fa-check-to-slot"></i>
-                                            </span>
-                                            <h5 className="card-title">
-                                                {market.position} of {market.country} {this.flagemojiToPNG(String.fromCodePoint("0x" + market.countryDetails[0].unicode1) + String.fromCodePoint("0x" + market.countryDetails[0].unicode2))}
-                                            </h5>
-                                            <h6 className="card-subtitle mb-2 text-muted">Created: {new Date(market.timestampCreated).toDateString()}</h6>
-                                            <h6 className="card-subtitle mb-2 text-muted">Expiry: {new Date(market.timestampExpiry).toDateString()}</h6>
-                                        </div>
-                                        <div>
-                                            <button
-                                                type="button"
-                                                className="btn btn-success ms-4"
-                                                onClick={() => {
-                                                    this.props.updateParentDisplay("MarketDetails");
-                                                    this.props.updateParentState("market_id", market._id);
-                                                }}
-                                            >
-                                                Trade
-                                            </button>
-                                        </div>
-                                    </div>
-                                    {(function () {
-                                        let renderArray = [];
-                                        let count = 0;
-                                        for (let politicianEntry of market.politicians) {
-                                            if (count < 3) {
-                                                count++;
-                                                let yesTokens = politicianEntry.yes;
-                                                let noTokens = politicianEntry.no;
-                                                let yesPrice = noTokens / (yesTokens + noTokens);
-                                                let noPrice = yesTokens / (yesTokens + noTokens);
-                                                globalVolume += politicianEntry.volume;
-                                                globalLiquidity += yesPrice * yesTokens * 2;
-                                                renderArray.push(
-                                                    <div className="border-bottom d-flex align-items-center justify-content-between" key={politicianEntry.politician}>
-                                                        <span className="card-text me-auto">{politicianEntry.politician}</span>
-                                                        <span className="text-success me-2">Yes: {(yesPrice * 100).toFixed(0)}¢</span>
-                                                        <span className="text-danger">No: {(noPrice * 100).toFixed(0)}¢</span>
-                                                    </div>
-                                                );
-                                            } else {
-                                                renderArray.push(
-                                                    <div className="border-bottom d-flex align-items-center justify-content-between" key="more">
-                                                        <span className="card-text me-auto text-muted">+ {market.politicians.length - 3} more</span>
-                                                    </div>
-                                                );
-                                                break;
-                                            }
-                                        }
-                                        return renderArray;
-                                    })()}
-                                </div>
-                                <div className="mt-2 d-flex align-items-center ">
-                                    <i className="fa-solid fa-chart-column text-muted tooltipHTML">
-                                        <span className="tooltiptextHTML">Volume</span>
-                                    </i>
-                                    <span className="card-text text-muted">&nbsp;${globalVolume.toFixed(2)}&nbsp;</span>
-                                    <i className="fa-solid fa-water text-muted ms-3 tooltipHTML">
-                                        <span className="tooltiptextHTML">Liquidity</span>
-                                    </i>
-                                    <span className="card-text text-muted">&nbsp;${globalLiquidity.toFixed(2)}&nbsp;</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </React.Fragment>
-            );
+            if (this.state.marketType.includes(1) && market.timestampExpiry <= new Date().getTime() && market.type === "open") {
+                renderArray.push(this.renderCard("#ffffe6", market, globalVolume, globalLiquidity));
+            } else if (this.state.marketType.includes(0) && market.timestampExpiry > new Date().getTime()) {
+                renderArray.push(this.renderCard("#e6ffe6", market, globalVolume, globalLiquidity));
+            } else if (this.state.marketType.includes(2) && market.timestampExpiry <= new Date().getTime() && market.type === "closed") {
+                renderArray.push(this.renderCard("#ffe6e6", market, globalVolume, globalLiquidity));
+            }
         }
         return renderArray;
     }
+
+    renderCard = (color, market, globalVolume, globalLiquidity) => {
+        return (
+            <React.Fragment key={market._id}>
+                <div className="col-12 align-items-stretch col-lg-6 col-xl-4">
+                    <div className="card mb-3" style={{ backgroundColor: color }}>
+                        <div className="card-body  d-flex flex-column justify-content-between" style={{ minHeight: "300px" }}>
+                            <div className="">
+                                <div className="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span>
+                                            <i className="fa-solid fa-check-to-slot"></i>
+                                        </span>
+                                        <h5 className="card-title">
+                                            {market.position} of {market.country} {this.flagemojiToPNG(String.fromCodePoint("0x" + market.countryDetails[0].unicode1) + String.fromCodePoint("0x" + market.countryDetails[0].unicode2))}
+                                        </h5>
+                                        <h6 className="card-subtitle mb-2 text-muted">Created: {new Date(market.timestampCreated).toDateString()}</h6>
+                                        <h6 className="card-subtitle mb-2 text-muted">Expiry: {new Date(market.timestampExpiry).toDateString()}</h6>
+                                    </div>
+                                    <div>
+                                        <button
+                                            type="button"
+                                            className="btn btn-success ms-4"
+                                            onClick={() => {
+                                                this.props.updateParentDisplay("MarketDetails");
+                                                this.props.updateParentState("market_id", market._id);
+                                            }}
+                                        >
+                                            Trade
+                                        </button>
+                                    </div>
+                                </div>
+                                {(function () {
+                                    let renderArray = [];
+                                    let count = 0;
+                                    for (let politicianEntry of market.politicians) {
+                                        if (count < 3) {
+                                            count++;
+                                            let yesTokens = politicianEntry.yes;
+                                            let noTokens = politicianEntry.no;
+                                            let yesPrice = noTokens / (yesTokens + noTokens);
+                                            let noPrice = yesTokens / (yesTokens + noTokens);
+                                            globalVolume += politicianEntry.volume;
+                                            globalLiquidity += yesPrice * yesTokens * 2;
+                                            renderArray.push(
+                                                <div className="border-bottom d-flex align-items-center justify-content-between" key={politicianEntry.politician}>
+                                                    <span className="card-text me-auto">{politicianEntry.politician}</span>
+                                                    <span className="text-success me-2">Yes: {(yesPrice * 100).toFixed(0)}¢</span>
+                                                    <span className="text-danger">No: {(noPrice * 100).toFixed(0)}¢</span>
+                                                </div>
+                                            );
+                                        } else {
+                                            renderArray.push(
+                                                <div className="border-bottom d-flex align-items-center justify-content-between" key="more">
+                                                    <span className="card-text me-auto text-muted">+ {market.politicians.length - 3} more</span>
+                                                </div>
+                                            );
+                                            break;
+                                        }
+                                    }
+                                    return renderArray;
+                                })()}
+                            </div>
+                            <div className="mt-2 d-flex align-items-center ">
+                                <i className="fa-solid fa-chart-column text-muted tooltipHTML">
+                                    <span className="tooltiptextHTML">Volume</span>
+                                </i>
+                                <span className="card-text text-muted">&nbsp;${globalVolume.toFixed(2)}&nbsp;</span>
+                                <i className="fa-solid fa-water text-muted ms-3 tooltipHTML">
+                                    <span className="tooltiptextHTML">Liquidity</span>
+                                </i>
+                                <span className="card-text text-muted">&nbsp;${globalLiquidity.toFixed(2)}&nbsp;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </React.Fragment>
+        );
+    };
 
     renderNewMarket() {
         return (
@@ -418,19 +426,21 @@ export default class Markets extends React.Component {
     }
 
     async componentDidMount() {
+        let queryParams = {
+            sortOptions: this.state.sortOptions,
+            ascendDescend: this.state.ascendDescend,
+            marketType: this.state.marketType,
+            search: this.state.search,
+            expiryDateGreater: new Date(this.state.expiryDateGreater).getTime(),
+            expiryDateLesser: new Date(this.state.expiryDateLesser).getTime(),
+            creationDateGreater: new Date(this.state.creationDateGreater).getTime(),
+            creationDateLesser: new Date(this.state.creationDateLesser).getTime(),
+            volumeGreater: this.state.volumeGreater,
+            volumeLesser: this.state.volumeLesser,
+        };
+
         let response1 = await axios.get(API_URL + "/open_markets", {
-            params: {
-                sortOptions: this.state.sortOptions,
-                ascendDescend: this.state.ascendDescend,
-                marketType: this.state.marketType,
-                search: this.state.search,
-                expiryDateGreater: new Date(this.state.expiryDateGreater).getTime(),
-                expiryDateLesser: new Date(this.state.expiryDateLesser).getTime(),
-                creationDateGreater: new Date(this.state.creationDateGreater).getTime(),
-                creationDateLesser: new Date(this.state.creationDateLesser).getTime(),
-                volumeGreater: this.state.volumeGreater,
-                volumeLesser: this.state.volumeLesser,
-            },
+            params: queryParams,
         });
         this.setState({
             openMarkets: response1.data.openMarkets,

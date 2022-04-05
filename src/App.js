@@ -6,6 +6,7 @@ import Navbar from "./Navbar";
 import Signup from "./Signup";
 import Login from "./Login";
 import Markets from "./Markets";
+import Footer from "./Footer";
 import MarketDetails from "./MarketDetails";
 import Leaderboard from "./Leaderboard";
 import Dashboard from "./Dashboard";
@@ -141,6 +142,7 @@ class App extends React.Component {
             <>
                 <Navbar userSessionDetails={this.state.userSessionDetails} updateParentDisplay={this.updateParentDisplay} updateParentState={this.updateParentState} />
                 <div className="container">{this.setDisplay()}</div>
+                <Footer />
             </>
         );
     }
