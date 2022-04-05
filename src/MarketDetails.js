@@ -39,14 +39,21 @@ export default class Markets extends React.Component {
         //Apex Charts stuff
         options: {
             chart: {
+                id: "realtime",
                 type: "line",
-                group: "charts",
                 //disable chart zooming
                 toolbar: {
                     show: false,
                 },
                 zoom: {
                     enabled: false,
+                },
+                animations: {
+                    enabled: true,
+                    easing: "linear",
+                    dynamicAnimation: {
+                        speed: 1000,
+                    },
                 },
             },
             //Pre-loading title while fetching price data
@@ -76,7 +83,6 @@ export default class Markets extends React.Component {
                 type: "datetime",
                 labels: {
                     style: {
-                        colors: "#f0f0f0",
                         fontFamily: "Source Code Pro, monospace",
                     },
                 },
@@ -95,6 +101,16 @@ export default class Markets extends React.Component {
                     enabled: false,
                 },
             },
+            yaxis: {
+                max: 1,
+                min: 0,
+                tickAmount: 10,
+                labels: {
+                    formatter: function (val, index) {
+                        return "$" + val.toFixed(2);
+                    },
+                },
+            },
             //Words to show then chart is loading
             noData: {
                 text: "Loading Charts...",
@@ -109,7 +125,6 @@ export default class Markets extends React.Component {
         },
         series: [
             {
-                nmae: "Price of Yes",
                 data: [],
             },
         ],
@@ -1078,9 +1093,12 @@ export default class Markets extends React.Component {
         let noTokens = this.state.politicians[0].no;
         let yesPrice = noTokens / (yesTokens + noTokens);
         //Update chart
-        this.setState({
-            series: [{ data: this.state.politicians[0].chart }, [new Date().getTime(), yesPrice]],
-        });
+        console.log(this.state.politicians[0].chart1);
+        Chart.exec("realtime", "updateSeries", [
+            {
+                data: [...this.state.politicians[0].chart1, [new Date().getTime(), yesPrice]],
+            },
+        ]);
 
         //Pull Order History tokens for market 0
         if (this.props.userSessionDetails._id) {

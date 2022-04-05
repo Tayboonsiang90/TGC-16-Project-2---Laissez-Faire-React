@@ -100,6 +100,8 @@ export default class Markets extends React.Component {
             this.setState({
                 successCreateMessage: true,
             });
+
+            this.updateStateMarkets();
         } catch (error) {
             this.setState({
                 warningCreateMessage: error.response.data.message,
