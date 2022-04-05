@@ -22,7 +22,7 @@ export default class Markets extends React.Component {
         createMarketCountry: "Country",
         createMarketPosition: "Position",
         createMarketExpiry: "",
-        createMarketDescription: "",
+        createMarketDescription: "The contract that resolves to Yes shall be that which identifies the ?? of the ?? upon the Expiry Date listed.",
         createMarketPeople: [],
         createMarketPeopleField: "",
         successCreateMessage: false,

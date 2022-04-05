@@ -1,6 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import Chart from "react-apexcharts";
 
 const API_URL = "http://127.0.0.1:8888";
 
@@ -10,6 +11,7 @@ export default class Markets extends React.Component {
         country: "",
         description: "",
         politicians: [],
+        //Display
         timestampCreated: 0,
         timestampExpiry: 0,
         globalVolume: 0,
@@ -21,6 +23,7 @@ export default class Markets extends React.Component {
         yesBalance: 0,
         noBalance: 0,
         liquidityBalance: 0,
+        //Interactive
         warningBuySellMessage: "",
         successBuySellMessage: false,
         warningMintRedeemMessage: "",
@@ -33,6 +36,83 @@ export default class Markets extends React.Component {
         mintRedeemButton: "MINT",
         mintRedeemAmount: 0,
         orderHistory: [],
+        //Apex Charts stuff
+        options: {
+            chart: {
+                type: "line",
+                group: "charts",
+                //disable chart zooming
+                toolbar: {
+                    show: false,
+                },
+                zoom: {
+                    enabled: false,
+                },
+            },
+            //Pre-loading title while fetching price data
+            title: {
+                text: "Loading Charts...",
+                align: "center",
+                style: {
+                    color: "#f0f0f0",
+                    fontFamily: "Source Code Pro, monospace",
+                },
+            },
+            //Data Labels are labels with value on the chart
+            dataLabels: {
+                enabled: false,
+            },
+            //Defining chart color
+            colors: ["#FF9900"],
+            //Line Stroke
+            stroke: {
+                show: true,
+                curve: "smooth",
+                lineCap: "butt",
+                width: 3,
+                dashArray: 0,
+            },
+            xaxis: {
+                type: "datetime",
+                labels: {
+                    style: {
+                        colors: "#f0f0f0",
+                        fontFamily: "Source Code Pro, monospace",
+                    },
+                },
+                //vertical crosshairs styling
+                crosshairs: {
+                    show: true,
+                    width: 1,
+                    stroke: {
+                        colors: "#f0f0f0",
+                        width: 2,
+                        dashArray: 0,
+                    },
+                },
+                //x-axis tooltip
+                tooltip: {
+                    enabled: false,
+                },
+            },
+            //Words to show then chart is loading
+            noData: {
+                text: "Loading Charts...",
+                align: "center",
+                verticalAlign: "middle",
+                style: {
+                    color: "#FF9900",
+                    fontSize: "1em",
+                    fontFamily: "Tourney, cursive",
+                },
+            },
+        },
+        series: [
+            {
+                nmae: "Price of Yes",
+                data: [],
+            },
+        ],
     };
 
     onEventString = (evt) => {
@@ -56,12 +136,22 @@ export default class Markets extends React.Component {
 
     updateYesNoBalances = async (evt) => {
         let market_id = this.state.politicians[evt.currentTarget.value].market_id;
-        let response = await axios.get(API_URL + "/balances/" + market_id + "/" + this.props.userSessionDetails._id);
+        if (this.props.userSessionDetails._id) {
+            let response = await axios.get(API_URL + "/balances/" + market_id + "/" + this.props.userSessionDetails._id);
 
-        this.setState({
-            yesBalance: response.data.balances.yes,
-            noBalance: response.data.balances.no,
-        });
+            this.setState({
+                yesBalance: response.data.balances.yes,
+                noBalance: response.data.balances.no,
+            });
+        }
+    };
+
+    renderCharts = () => {
+        return (
+            <div className="mt-5">
+                <Chart options={this.state.options} series={this.state.series} type="line" width="100%" />
+            </div>
+        );
     };
 
     submitTransaction = async () => {
@@ -195,38 +285,40 @@ export default class Markets extends React.Component {
     }
 
     renderSidebar() {
-        if (this.state.timestampExpiry > new Date().getTime()) {
-            return (
-                <React.Fragment>
-                    <div className="border border-5 p-3 border-warning">
-                        <div className="mt-2 border-bottom border-warning border-5 pb-4 d-flex align-items-center justify-content-evenly">
-                            <button type="button" className={"shadow-none btn btn-outline-dark w-100" + (this.state.tradeLiquidityButton === "TRADE" ? " active" : "")} data-bs-toggle="button" name="tradeLiquidityButton" value="TRADE" onClick={this.onEventString}>
-                                TRADE
-                            </button>
-                            <button type="button" className={"shadow-none btn btn-outline-dark w-100" + (this.state.tradeLiquidityButton === "LIQUIDITY" ? " active" : "")} data-bs-toggle="button" name="tradeLiquidityButton" value="LIQUIDITY" onClick={this.onEventString}>
-                                LIQUIDITY
-                            </button>
+        if (this.state.timestampExpiry) {
+            if (this.state.timestampExpiry > new Date().getTime()) {
+                return (
+                    <React.Fragment>
+                        <div className="border border-5 p-3 border-warning">
+                            <div className="mt-2 border-bottom border-warning border-5 pb-4 d-flex align-items-center justify-content-evenly">
+                                <button type="button" className={"shadow-none btn btn-outline-dark w-100" + (this.state.tradeLiquidityButton === "TRADE" ? " active" : "")} data-bs-toggle="button" name="tradeLiquidityButton" value="TRADE" onClick={this.onEventString}>
+                                    TRADE
+                                </button>
+                                <button type="button" className={"shadow-none btn btn-outline-dark w-100" + (this.state.tradeLiquidityButton === "LIQUIDITY" ? " active" : "")} data-bs-toggle="button" name="tradeLiquidityButton" value="LIQUIDITY" onClick={this.onEventString}>
+                                    LIQUIDITY
+                                </button>
+                            </div>
+                            {this.state.tradeLiquidityButton === "TRADE" ? this.renderTradeSidebar() : this.renderLiquiditySidebar()}
                         </div>
-                        {this.state.tradeLiquidityButton === "TRADE" ? this.renderTradeSidebar() : this.renderLiquiditySidebar()}
-                    </div>
-                </React.Fragment>
-            );
-        } else if (this.state.timestampExpiry <= new Date().getTime() && this.state.type === "open") {
-            return (
-                <React.Fragment>
-                    <div className="border border-5 p-3 border-warning">
-                        <h1> This market has reached settlement date and is being resolved. </h1>
-                    </div>
-                </React.Fragment>
-            );
-        } else {
-            return (
-                <React.Fragment>
-                    <div className="border border-5 p-3 border-warning">
-                        <h1> This market has reached settlement date and has been resolved. All contracts have been settled and paid. </h1>
-                    </div>
-                </React.Fragment>
-            );
+                    </React.Fragment>
+                );
+            } else if (this.state.timestampExpiry <= new Date().getTime() && this.state.type === "open") {
+                return (
+                    <React.Fragment>
+                        <div className="border border-5 p-3 border-warning">
+                            <h1> This market has reached settlement date and is being resolved. </h1>
+                        </div>
+                    </React.Fragment>
+                );
+            } else {
+                return (
+                    <React.Fragment>
+                        <div className="border border-5 p-3 border-warning">
+                            <h1> This market has reached settlement date and has been resolved. All contracts have been settled and paid. </h1>
+                        </div>
+                    </React.Fragment>
+                );
+            }
         }
     }
 
@@ -971,19 +1063,32 @@ export default class Markets extends React.Component {
 
         //Pull yes no tokens for market 0
         let market_id = this.state.politicians[0].market_id;
-        let response2 = await axios.get(API_URL + "/balances/" + market_id + "/" + this.props.userSessionDetails._id);
+        //if logged in
+        if (this.props.userSessionDetails._id) {
+            let response2 = await axios.get(API_URL + "/balances/" + market_id + "/" + this.props.userSessionDetails._id);
 
+            this.setState({
+                yesBalance: response2.data.balances.yes,
+                noBalance: response2.data.balances.no,
+                liquidityBalance: response2.data.balances.liquidityShares,
+            });
+        }
+
+        let yesTokens = this.state.politicians[0].yes;
+        let noTokens = this.state.politicians[0].no;
+        let yesPrice = noTokens / (yesTokens + noTokens);
+        //Update chart
         this.setState({
-            yesBalance: response2.data.balances.yes,
-            noBalance: response2.data.balances.no,
-            liquidityBalance: response2.data.balances.liquidityShares,
+            series: [{ data: this.state.politicians[0].chart }, [new Date().getTime(), yesPrice]],
         });
 
         //Pull Order History tokens for market 0
-        let response3 = await axios.get(API_URL + "/order_history/" + market_id + "/" + this.props.userSessionDetails._id);
-        this.setState({
-            orderHistory: response3.data,
-        });
+        if (this.props.userSessionDetails._id) {
+            let response3 = await axios.get(API_URL + "/order_history/" + market_id + "/" + this.props.userSessionDetails._id);
+            this.setState({
+                orderHistory: response3.data,
+            });
+        }
     }
 
     async updateOpenMarketsState() {
@@ -1015,19 +1120,32 @@ export default class Markets extends React.Component {
 
         //Pull yes no tokens for current market
         let market_id = this.state.politicians[this.state.displayMarket].market_id;
-        let response2 = await axios.get(API_URL + "/balances/" + market_id + "/" + this.props.userSessionDetails._id);
+        //if logged in
+        if (this.props.userSessionDetails._id) {
+            let response2 = await axios.get(API_URL + "/balances/" + market_id + "/" + this.props.userSessionDetails._id);
 
+            this.setState({
+                yesBalance: response2.data.balances.yes,
+                noBalance: response2.data.balances.no,
+                liquidityBalance: response2.data.balances.liquidityShares,
+            });
+        }
+
+        //Update chart
+        let yesTokens = this.state.politicians[this.state.displayMarket].yes;
+        let noTokens = this.state.politicians[this.state.displayMarket].no;
+        let yesPrice = noTokens / (yesTokens + noTokens);
         this.setState({
-            yesBalance: response2.data.balances.yes,
-            noBalance: response2.data.balances.no,
-            liquidityBalance: response2.data.balances.liquidityShares,
+            series: [{ data: [...this.state.politicians[this.state.displayMarket].chart, [new Date().getTime(), yesPrice]] }],
         });
 
         //Pull Order History tokens for market 0
-        let response3 = await axios.get(API_URL + "/order_history/" + market_id + "/" + this.props.userSessionDetails._id);
-        this.setState({
-            orderHistory: response3.data,
-        });
+        if (this.props.userSessionDetails._id) {
+            let response3 = await axios.get(API_URL + "/order_history/" + market_id + "/" + this.props.userSessionDetails._id);
+            this.setState({
+                orderHistory: response3.data,
+            });
+        }
     }
 
     render() {
@@ -1061,13 +1179,13 @@ export default class Markets extends React.Component {
                             </div>
                         </div>
                         <div className="mt-4">{this.renderPoliticianMarkets()}</div>
-                        <img className="img-fluid mt-4" src="https://www.presentationpoint.com/wp-content/uploads/2018/12/MS-Graph-in-PowerPoint-inserted-graph.jpg"></img>
+                        <div>{this.renderCharts()}</div>
                         {/* Rules and Details  */}
-                        <h1 className="ms-2 mt-3">Rules and Details</h1>
+                        <h1 className="ms-2 mt-5">Rules and Details</h1>
                         <p>{this.state.description}</p>
                         <p>On expiry date, the adminstrators of Laissez Faire reserve the sole authority to judge the settlement of a market. In case of any ambiguity or uncertainty, there may be a delay in settlement.</p>
                         {/* Trade History  */}
-                        <h1 className="ms-2 mt-3">Trade History</h1>
+                        <h1 className="ms-2 mt-5">Trade History</h1>
                         <table className="table table-striped w-100">
                             <thead>
                                 <tr>

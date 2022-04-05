@@ -15,52 +15,54 @@ export default class Portfolio extends React.Component {
         for (let item of this.state.portfolio) {
             let name = "";
             let total = 0;
-            for (let i of item.market_details[0].politicians) {
-                if (i.market_id === item.market_id) {
-                    name = i.politician;
-                    total = i.liquidityShares;
+            if (item.market) {
+                for (let i of item.market_details[0].politicians) {
+                    if (i.market_id === item.market_id) {
+                        name = i.politician;
+                        total = i.liquidityShares;
+                    }
                 }
-            }
 
-            renderArray.push(
-                <tr key={item._id}>
-                    <td>{item.market_details[0].position}</td>
-                    <td>{item.market_details[0].country}</td>
-                    <td>{name}</td>
-                    <td>{new Date(item.market_details[0].timestampExpiry).toDateString()}</td>
-                    <td>
-                        {(item.yes || 0).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        })}
-                    </td>
-                    <td>
-                        {(item.no || 0).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        })}
-                    </td>
-                    <td>
-                        {((item.liquidityShares * 100) / total || 0).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        })}
-                        %
-                    </td>
-                    <td>
-                        <button
-                            type="button"
-                            className="btn btn-success"
-                            onClick={() => {
-                                this.props.updateParentDisplay("MarketDetails");
-                                this.props.updateParentState("market_id", item.market_details[0]._id);
-                            }}
-                        >
-                            Trade
-                        </button>
-                    </td>
-                </tr>
-            );
+                renderArray.push(
+                    <tr key={item._id}>
+                        <td>{item.market_details[0].position}</td>
+                        <td>{item.market_details[0].country}</td>
+                        <td>{name}</td>
+                        <td>{new Date(item.market_details[0].timestampExpiry).toDateString()}</td>
+                        <td>
+                            {(item.yes || 0).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            })}
+                        </td>
+                        <td>
+                            {(item.no || 0).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            })}
+                        </td>
+                        <td>
+                            {((item.liquidityShares * 100) / total || 0).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            })}
+                            %
+                        </td>
+                        <td>
+                            <button
+                                type="button"
+                                className="btn btn-success"
+                                onClick={() => {
+                                    this.props.updateParentDisplay("MarketDetails");
+                                    this.props.updateParentState("market_id", item.market_details[0]._id);
+                                }}
+                            >
+                                Trade
+                            </button>
+                        </td>
+                    </tr>
+                );
+            }
         }
         return renderArray;
     };
