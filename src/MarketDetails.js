@@ -11,6 +11,7 @@ export default class Markets extends React.Component {
         country: "",
         description: "",
         politicians: [],
+        type: "",
         //Display
         timestampCreated: 0,
         timestampExpiry: 0,
@@ -233,7 +234,7 @@ export default class Markets extends React.Component {
                         </div>
                     </React.Fragment>
                 );
-            } else {
+            } else if (this.state.timestampExpiry <= new Date().getTime() && this.state.type === "closed") {
                 return (
                     <React.Fragment>
                         <div className="border border-5 p-3 border-warning">
@@ -965,6 +966,7 @@ export default class Markets extends React.Component {
             country: response1.data.openMarkets[0].country,
             description: response1.data.openMarkets[0].description,
             politicians: response1.data.openMarkets[0].politicians,
+            type: response1.data.openMarkets[0].type,
             timestampCreated: response1.data.openMarkets[0].timestampCreated,
             timestampExpiry: response1.data.openMarkets[0].timestampExpiry,
         });
@@ -1014,6 +1016,7 @@ export default class Markets extends React.Component {
             country: response1.data.openMarkets[0].country,
             description: response1.data.openMarkets[0].description,
             politicians: response1.data.openMarkets[0].politicians,
+            type: response1.data.openMarkets[0].type,
             timestampCreated: response1.data.openMarkets[0].timestampCreated,
             timestampExpiry: response1.data.openMarkets[0].timestampExpiry,
         });
