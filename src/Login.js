@@ -82,6 +82,36 @@ export default class Login extends React.Component {
                                                     <u>Create here</u>
                                                 </a>
                                             </p>
+                                            <p className="text-center text-muted mt-3 mb-0">
+                                                Test User Account Login Details&nbsp;
+                                                <a
+                                                    href="/#"
+                                                    className="fw-bold text-body"
+                                                    onClick={() => {
+                                                        this.setState({
+                                                            email: "user@admin.com",
+                                                            password: "password",
+                                                        });
+                                                    }}
+                                                >
+                                                    <u>Click here</u>
+                                                </a>
+                                            </p>
+                                            <p className="text-center text-muted mb-0">
+                                                Test Admin Account Login Details&nbsp;
+                                                <a
+                                                    href="/#"
+                                                    className="fw-bold text-body"
+                                                    onClick={() => {
+                                                        this.setState({
+                                                            email: "root@admin.com",
+                                                            password: "password",
+                                                        });
+                                                    }}
+                                                >
+                                                    <u>Click here</u>
+                                                </a>
+                                            </p>
                                         </form>
                                     </div>
                                 </div>

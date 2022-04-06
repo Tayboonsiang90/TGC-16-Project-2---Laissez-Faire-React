@@ -109,7 +109,7 @@ export default class Signup extends React.Component {
                                         </div>
 
                                         <div className="alert alert-warning alert-dismissible fade show mb-4" role="alert">
-                                            <strong>Security Warning:</strong> Passwords are not encrypted and stored in your cookies! Do not re-use passwords!
+                                            <strong>Security Warning:</strong> Passwords are not encrypted and stored in your cookies in this beta app! Do not re-use passwords!
                                             <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
                                         </div>
 

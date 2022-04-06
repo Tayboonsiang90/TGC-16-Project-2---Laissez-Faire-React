@@ -70,8 +70,8 @@ export default class Dashboard extends React.Component {
         for (let item of this.state.transactions) {
             let dateString = new Date(item.timestamp);
             renderArray.push(
-                <tr className={item.type === "DEPOSIT" ? "table-success" : "table-danger"} key={item.timestamp}>
-                    <th>{item.type}</th>
+                <tr className={item.type === "DEPOSIT" ? "table-success" : item.type === "WITHDRAWAL" ? "table-danger" : "table-warning"} key={item.timestamp}>
+                    <th>{item.type + " " + (item.details || "")}</th>
                     <td>
                         $
                         {item.quantity.toLocaleString(undefined, {
