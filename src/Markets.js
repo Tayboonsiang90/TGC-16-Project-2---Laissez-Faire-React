@@ -17,7 +17,7 @@ export default class Markets extends React.Component {
         volumeGreater: 0,
         volumeLesser: 0,
         ascendDescend: 0, //0. Descending, 1. Ascending
-        marketType: [0], //0,1,2 (Open, Resolving, Closed)
+        marketType: [0, 1], //0,1,2 (Open, Resolving, Closed)
         search: "",
         createMarketCountry: "Country",
         createMarketPosition: "Position",

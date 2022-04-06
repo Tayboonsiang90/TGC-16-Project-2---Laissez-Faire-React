@@ -72,6 +72,23 @@ export default class Navbar extends React.Component {
                             <i className="fa-solid fa-list"></i>&nbsp;Portfolio
                         </div>
                     </li>
+                    {/* Admin Panel */}
+                    {(() => {
+                        if (this.props.userSessionDetails._id === "624d05441e16550f5b098375") {
+                            return (
+                                <li className="nav-item">
+                                    <div
+                                        className="btn btn-outline-dark w-100 mb-1 border-0"
+                                        onClick={() => {
+                                            this.props.updateParentDisplay("AdminPanel");
+                                        }}
+                                    >
+                                        <i className="fa-solid fa-list"></i>&nbsp;Admin Panel
+                                    </div>
+                                </li>
+                            );
+                        }
+                    })()}
                     <li className="nav-item">
                         <div className="btn btn-outline-dark w-100 mb-1 border-0" onClick={this.logoutButton}>
                             <i className="fa-solid fa-arrow-right-from-bracket"></i>&nbsp;Logout

@@ -1,7 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
-import Chart from "react-apexcharts";
+import ApexChart from "./ApexChart";
 
 const API_URL = "http://127.0.0.1:8888";
 
@@ -36,98 +36,14 @@ export default class Markets extends React.Component {
         mintRedeemButton: "MINT",
         mintRedeemAmount: 0,
         orderHistory: [],
-        //Apex Charts stuff
-        options: {
-            chart: {
-                id: "realtime",
-                type: "line",
-                //disable chart zooming
-                toolbar: {
-                    show: false,
-                },
-                zoom: {
-                    enabled: false,
-                },
-                animations: {
-                    enabled: true,
-                    easing: "linear",
-                    dynamicAnimation: {
-                        speed: 1000,
-                    },
-                },
-            },
-            //Pre-loading title while fetching price data
-            title: {
-                text: "Loading Charts...",
-                align: "center",
-                style: {
-                    color: "#f0f0f0",
-                    fontFamily: "Source Code Pro, monospace",
-                },
-            },
-            //Data Labels are labels with value on the chart
-            dataLabels: {
-                enabled: false,
-            },
-            //Defining chart color
-            colors: ["#FF9900"],
-            //Line Stroke
-            stroke: {
-                show: true,
-                curve: "smooth",
-                lineCap: "butt",
-                width: 3,
-                dashArray: 0,
-            },
-            xaxis: {
-                type: "datetime",
-                labels: {
-                    style: {
-                        fontFamily: "Source Code Pro, monospace",
-                    },
-                },
-                //vertical crosshairs styling
-                crosshairs: {
-                    show: true,
-                    width: 1,
-                    stroke: {
-                        colors: "#f0f0f0",
-                        width: 2,
-                        dashArray: 0,
-                    },
-                },
-                //x-axis tooltip
-                tooltip: {
-                    enabled: false,
-                },
-            },
-            yaxis: {
-                max: 1,
-                min: 0,
-                tickAmount: 10,
-                labels: {
-                    formatter: function (val, index) {
-                        return "$" + val.toFixed(2);
-                    },
-                },
-            },
-            //Words to show then chart is loading
-            noData: {
-                text: "Loading Charts...",
-                align: "center",
-                verticalAlign: "middle",
-                style: {
-                    color: "#FF9900",
-                    fontSize: "1em",
-                    fontFamily: "Tourney, cursive",
-                },
-            },
-        },
-        series: [
-            {
-                data: [],
-            },
-        ],
+        //Refresh child component
+        refreshChildChart: false,
+    };
+
+    childChartUpdate = () => {
+        this.setState({
+            refreshChildChart: !this.state.refreshChildChart,
+        });
     };
 
     onEventString = (evt) => {
@@ -159,14 +75,6 @@ export default class Markets extends React.Component {
                 noBalance: response.data.balances.no,
             });
         }
-    };
-
-    renderCharts = () => {
-        return (
-            <div className="mt-5">
-                <Chart options={this.state.options} series={this.state.series} type="line" width="100%" />
-            </div>
-        );
     };
 
     submitTransaction = async () => {
@@ -1089,17 +997,6 @@ export default class Markets extends React.Component {
             });
         }
 
-        let yesTokens = this.state.politicians[0].yes;
-        let noTokens = this.state.politicians[0].no;
-        let yesPrice = noTokens / (yesTokens + noTokens);
-        //Update chart
-        console.log(this.state.politicians[0].chart1);
-        Chart.exec("realtime", "updateSeries", [
-            {
-                data: [...this.state.politicians[0].chart1, [new Date().getTime(), yesPrice]],
-            },
-        ]);
-
         //Pull Order History tokens for market 0
         if (this.props.userSessionDetails._id) {
             let response3 = await axios.get(API_URL + "/order_history/" + market_id + "/" + this.props.userSessionDetails._id);
@@ -1149,14 +1046,6 @@ export default class Markets extends React.Component {
             });
         }
 
-        //Update chart
-        let yesTokens = this.state.politicians[this.state.displayMarket].yes;
-        let noTokens = this.state.politicians[this.state.displayMarket].no;
-        let yesPrice = noTokens / (yesTokens + noTokens);
-        this.setState({
-            series: [{ data: [...this.state.politicians[this.state.displayMarket].chart, [new Date().getTime(), yesPrice]] }],
-        });
-
         //Pull Order History tokens for market 0
         if (this.props.userSessionDetails._id) {
             let response3 = await axios.get(API_URL + "/order_history/" + market_id + "/" + this.props.userSessionDetails._id);
@@ -1164,6 +1053,8 @@ export default class Markets extends React.Component {
                 orderHistory: response3.data,
             });
         }
+
+        this.childChartUpdate();
     }
 
     render() {
@@ -1197,7 +1088,9 @@ export default class Markets extends React.Component {
                             </div>
                         </div>
                         <div className="mt-4">{this.renderPoliticianMarkets()}</div>
-                        <div>{this.renderCharts()}</div>
+                        <div className="mt-4">
+                            <ApexChart market_id={this.props.market_id} refreshChildChart={this.state.refreshChildChart} displayMarket={this.state.displayMarket} />
+                        </div>
                         {/* Rules and Details  */}
                         <h1 className="ms-2 mt-5">Rules and Details</h1>
                         <p>{this.state.description}</p>

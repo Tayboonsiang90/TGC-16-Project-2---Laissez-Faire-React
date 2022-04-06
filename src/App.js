@@ -10,8 +10,8 @@ import Footer from "./Footer";
 import MarketDetails from "./MarketDetails";
 import Leaderboard from "./Leaderboard";
 import Dashboard from "./Dashboard";
-import NewMarket from "./NewMarket";
 import Portfolio from "./Portfolio";
+import AdminPanel from "./AdminPanel";
 import axios from "axios";
 
 const API_URL = "http://127.0.0.1:8888";
@@ -122,16 +122,16 @@ class App extends React.Component {
                     <Dashboard updateSessionState={this.updateSessionState} userSessionDetails={this.state.userSessionDetails} updateParentDisplay={this.updateParentDisplay} />
                 </React.Fragment>
             );
-        } else if (this.state.display === "NewMarket") {
-            return (
-                <React.Fragment>
-                    <NewMarket updateParentDisplay={this.updateParentDisplay} />
-                </React.Fragment>
-            );
         } else if (this.state.display === "Portfolio") {
             return (
                 <React.Fragment>
                     <Portfolio userSessionDetails={this.state.userSessionDetails} updateParentDisplay={this.updateParentDisplay} updateParentState={this.updateParentState} />
+                </React.Fragment>
+            );
+        } else if (this.state.display === "AdminPanel") {
+            return (
+                <React.Fragment>
+                    <AdminPanel userSessionDetails={this.state.userSessionDetails} />
                 </React.Fragment>
             );
         }
