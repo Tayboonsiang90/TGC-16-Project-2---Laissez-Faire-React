@@ -111,6 +111,7 @@ export default class Navbar extends React.Component {
             password: "",
             timestamp: 0,
         });
+        this.props.updateParentDisplay("Markets");
     };
 
     render() {

@@ -170,7 +170,7 @@ export default class Markets extends React.Component {
                                             <i className="fa-solid fa-check-to-slot"></i>
                                         </span>
                                         <h5 className="card-title">
-                                            {market.position} of {market.country} {this.flagemojiToPNG(String.fromCodePoint("0x" + market.countryDetails[0].unicode1) + String.fromCodePoint("0x" + market.countryDetails[0].unicode2))}
+                                            {market.position} of {market.country} {market.countryDetails[0] ? this.flagemojiToPNG(String.fromCodePoint("0x" + market.countryDetails[0].unicode1) + String.fromCodePoint("0x" + market.countryDetails[0].unicode2)) : ""}
                                         </h5>
                                         <h6 className="card-subtitle mb-2 text-muted">Created: {new Date(market.timestampCreated).toDateString()}</h6>
                                         <h6 className="card-subtitle mb-2 text-muted">Expiry: {new Date(market.timestampExpiry).toDateString()}</h6>

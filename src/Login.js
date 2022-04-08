@@ -82,7 +82,10 @@ export default class Login extends React.Component {
                                                     <u>Create here</u>
                                                 </a>
                                             </p>
-                                            <p className="text-center text-muted mt-3 mb-0">
+                                            <blockquote className="blockquote text-center mt-5 mb-0">
+                                                <strong><u>With great power comes great responsibility... Please do not misuse the accounts below</u></strong>
+                                            </blockquote>
+                                            <p className="text-center text-muted mb-0">
                                                 Test User Account Login Details&nbsp;
                                                 <a
                                                     href="/#"
