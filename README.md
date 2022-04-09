@@ -7,7 +7,9 @@
 ![alt text](./readmeImages/responsive.png)
 
 ## URL to deployed app
-https://zesty-licorice-7fe033.netlify.app/
+React Website: https://zesty-licorice-7fe033.netlify.app/
+
+Database API: https://project-2-express.herokuapp.com/
 
 ## Summary
 
