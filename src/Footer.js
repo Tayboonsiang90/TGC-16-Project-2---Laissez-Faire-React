@@ -23,7 +23,7 @@ export default class Footer extends React.Component {
                                     <i className="fab fa-github"></i>
                                 </a>
                             </div>
-                            <div className="font-p1">© 2022 Tay Boon Siang</div>
+                            <div className="font-p1 text-dark">© 2022 Tay Boon Siang</div>
                         </div>
                     </div>
                 </footer>

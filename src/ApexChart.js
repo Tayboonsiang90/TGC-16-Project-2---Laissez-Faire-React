@@ -43,6 +43,7 @@ export default class ApexChart extends React.Component {
                     align: "center",
                     style: {
                         fontFamily: "Source Code Pro, monospace",
+                        color: "#F8F8F8",
                     },
                 },
                 //Data Labels are labels with value on the chart
@@ -50,7 +51,7 @@ export default class ApexChart extends React.Component {
                     enabled: false,
                 },
                 //Defining chart color
-                colors: ["#00802b", "#cc0000", "#e6e6e6"],
+                colors: ["#39ff14", "#ff0000", "#e6e6e6"],
                 //Line Stroke
                 stroke: {
                     show: true,
@@ -59,12 +60,19 @@ export default class ApexChart extends React.Component {
                     width: 3,
                     dashArray: 0,
                 },
+                legend: {
+                    fontFamily: "Source Code Pro, monospace",
+                    labels: {
+                        colors: "#f8f8f8",
+                    },
+                },
                 xaxis: {
                     type: "datetime",
                     labels: {
                         style: {
                             fontFamily: "Source Code Pro, monospace",
                             datetimeUTC: false,
+                            colors: "#F8F8F8",
                         },
                     },
                     //vertical crosshairs styling
@@ -72,7 +80,7 @@ export default class ApexChart extends React.Component {
                         show: true,
                         width: 1,
                         stroke: {
-                            colors: "#f0f0f0",
+                            colors: "#F8F8F8",
                             width: 2,
                             dashArray: 0,
                         },
@@ -87,6 +95,11 @@ export default class ApexChart extends React.Component {
                     min: 0,
                     tickAmount: 10,
                     labels: {
+                        style: {
+                            fontFamily: "Source Code Pro, monospace",
+                            datetimeUTC: false,
+                            colors: "#F8F8F8",
+                        },
                         formatter: function (val, index) {
                             return val.toFixed(0) + "¢";
                         },
@@ -98,7 +111,7 @@ export default class ApexChart extends React.Component {
                     align: "center",
                     verticalAlign: "middle",
                     style: {
-                        color: "#FF9900",
+                        color: "#F8F8F8",
                         fontSize: "1em",
                         fontFamily: "Tourney, cursive",
                     },

@@ -91,10 +91,10 @@ export default class Signup extends React.Component {
         return (
             <>
                 <div className="mask d-flex align-items-center h-100">
-                    <div className="container h-100">
+                    <div className="container h-100 mt-4">
                         <div className="row d-flex justify-content-center align-items-center h-100">
                             <div className="col-12 col-md-9 col-lg-7 col-xl-6">
-                                <div className="card">
+                                <div className="card style-neutral">
                                     <div className="card-body p-5">
                                         <h2 className="text-uppercase text-center mb-5">Create an account</h2>
 

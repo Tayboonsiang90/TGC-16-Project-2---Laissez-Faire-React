@@ -70,10 +70,10 @@ export default class Dashboard extends React.Component {
         for (let item of this.state.transactions) {
             let dateString = new Date(item.timestamp);
             renderArray.push(
-                <tr className={item.type === "DEPOSIT" ? "table-success" : item.type === "WITHDRAWAL" ? "table-danger" : "table-warning"} key={item.timestamp}>
+                <tr className={item.type === "DEPOSIT" ? "text-success" : item.type === "WITHDRAWAL" ? "text-danger" : "text-warning"} key={item.timestamp}>
                     <th>{item.type + " " + (item.details || "")}</th>
                     <td>
-                        $
+                        {item.type === "WITHDRAWAL" ? "-" : "+"}$
                         {item.quantity.toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
@@ -102,13 +102,13 @@ export default class Dashboard extends React.Component {
                 {/* Account details cards  */}
                 <div className="d-flex mt-5">
                     <div className="card w-50">
-                        <div className="card-body text-center">
+                        <div className="card-body style-neutral text-center">
                             <h1 className="card-title fancy">Account Id</h1>
                             <h3 className="card-subtitle mb-2">{this.props.userSessionDetails._id}</h3>
                         </div>
                     </div>
                     <div className="card w-50">
-                        <div className="card-body text-center">
+                        <div className="card-body style-neutral text-center">
                             <h1 className="card-title fancy">Account Balance</h1>
                             <h3 className="card-subtitle mb-2">
                                 $&nbsp;
@@ -247,7 +247,7 @@ export default class Dashboard extends React.Component {
                     </div>
                 </div>
                 {/* Information Carousel  */}
-                <div className="card w-100 mt-5">
+                <div className="card w-100 mt-5 style-neutral">
                     <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
                         <div className="carousel-inner">
                             <div className="carousel-item active">
@@ -323,48 +323,50 @@ export default class Dashboard extends React.Component {
                     </div>
                 </div>
                 {/* User Details  */}
-                <div className="mb-3 row mt-5">
-                    <label htmlFor="staticEmail" className="ps-3 col-sm-2 col-form-label">
-                        Email
-                    </label>
-                    <div className="col-sm-10">
-                        <input type="text" readOnly className="ps-3 form-control-plaintext" id="staticEmail" value={this.props.userSessionDetails.email}></input>
+                <div className="style-neutral">
+                    <div className="mb-3 row mt-5">
+                        <label htmlFor="staticEmail" className="ps-3 col-sm-2 col-form-label">
+                            Email
+                        </label>
+                        <div className="col-sm-10">
+                            <input type="text" readOnly className="ps-3 form-control-plaintext" id="staticEmail" value={this.props.userSessionDetails.email}></input>
+                        </div>
                     </div>
-                </div>
-                <div className="mb-3 row">
-                    <label htmlFor="inputPassword" className="ps-3 col-sm-2 col-form-label">
-                        Password
-                    </label>
-                    <div className="col-sm-10">
-                        <input type="password" readOnly className="ps-3 form-control-plaintext" id="inputPassword" value={this.props.userSessionDetails.password}></input>
+                    <div className="mb-3 row">
+                        <label htmlFor="inputPassword" className="ps-3 col-sm-2 col-form-label">
+                            Password
+                        </label>
+                        <div className="col-sm-10">
+                            <input type="password" readOnly className="ps-3 form-control-plaintext" id="inputPassword" value={this.props.userSessionDetails.password}></input>
+                        </div>
                     </div>
-                </div>
-                <div className="mb-3 row">
-                    <label htmlFor="inputName" className="ps-3 col-sm-2 col-form-label">
-                        Name
-                    </label>
-                    <div className="col-sm-10">
-                        <input type="text" readOnly className="ps-3 form-control-plaintext" id="inputName" value={this.props.userSessionDetails.name}></input>
+                    <div className="mb-3 row">
+                        <label htmlFor="inputName" className="ps-3 col-sm-2 col-form-label">
+                            Name
+                        </label>
+                        <div className="col-sm-10">
+                            <input type="text" readOnly className="ps-3 form-control-plaintext" id="inputName" value={this.props.userSessionDetails.name}></input>
+                        </div>
                     </div>
-                </div>
-                <div className="mb-3 row">
-                    <label htmlFor="inputCountry" className="ps-3 col-sm-2 col-form-label">
-                        Country
-                    </label>
-                    <div className="col-sm-10">
-                        <input type="text" readOnly className="ps-3 form-control-plaintext" id="inputCountry" value={this.props.userSessionDetails.country}></input>
+                    <div className="mb-3 row">
+                        <label htmlFor="inputCountry" className="ps-3 col-sm-2 col-form-label">
+                            Country
+                        </label>
+                        <div className="col-sm-10">
+                            <input type="text" readOnly className="ps-3 form-control-plaintext" id="inputCountry" value={this.props.userSessionDetails.country}></input>
+                        </div>
                     </div>
-                </div>
-                <div className="mb-3 row">
-                    <label htmlFor="inputDoB" className="ps-3 col-sm-2 col-form-label">
-                        Date of Birth
-                    </label>
-                    <div className="col-sm-10">
-                        <input type="text" readOnly className="ps-3 form-control-plaintext" id="inputDoB" value={new Date(this.props.userSessionDetails.dateOfBirth).toLocaleDateString()}></input>
+                    <div className="mb-3 row">
+                        <label htmlFor="inputDoB" className="ps-3 col-sm-2 col-form-label">
+                            Date of Birth
+                        </label>
+                        <div className="col-sm-10">
+                            <input type="text" readOnly className="ps-3 form-control-plaintext" id="inputDoB" value={new Date(this.props.userSessionDetails.dateOfBirth).toLocaleDateString()}></input>
+                        </div>
                     </div>
                 </div>
                 {/* Transaction List  */}
-                <table className="table table-striped w-100 mt-5">
+                <table className="table w-100 mt-5">
                     <thead>
                         <tr>
                             <th scope="col">Transaction Type</th>

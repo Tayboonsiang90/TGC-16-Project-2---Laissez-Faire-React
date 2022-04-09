@@ -77,7 +77,7 @@ export default class Portfolio extends React.Component {
         return (
             <>
                 <h1 className="ms-2 mt-3">Portfolio</h1>
-                <table className="table table-striped w-100 text-center">
+                <table className="table w-100 text-center">
                     <thead>
                         <tr>
                             <th scope="col">Position</th>

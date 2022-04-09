@@ -1,5 +1,6 @@
-import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./bootstrapOverrides.css";
+import "./App.css";
 import React from "react";
 
 import Navbar from "./Navbar";
@@ -141,7 +142,7 @@ class App extends React.Component {
         return (
             <>
                 <Navbar userSessionDetails={this.state.userSessionDetails} updateParentDisplay={this.updateParentDisplay} updateParentState={this.updateParentState} />
-                <div className="container">{this.setDisplay()}</div>
+                <div id="parentContainer" className="container">{this.setDisplay()}</div>
                 <Footer />
             </>
         );

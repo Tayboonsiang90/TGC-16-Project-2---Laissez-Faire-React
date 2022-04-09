@@ -16,7 +16,7 @@ export default class Leaderboard extends React.Component {
         for (let item of this.state.leaderboard) {
             count++;
             renderArray.push(
-                <tr className={(item.timestamp === this.props.userSessionDetails.timestamp ? "table-success " : "") + (count < 4 ? "h" + (count + 3) : "")} key={item._id}>
+                <tr className={(item.timestamp === this.props.userSessionDetails.timestamp ? "text-success " : "") + (count < 4 ? "h" + (count + 3) : "")} key={item._id}>
                     <th>
                         {count} &nbsp; <i className={"fa-solid fa-trophy " + (count === 1 ? "d-inline" : "d-none")}></i>
                         <i className={"fa-solid fa-medal " + (count === 2 ? "d-inline" : "d-none")}></i>
@@ -51,7 +51,7 @@ export default class Leaderboard extends React.Component {
         return (
             <>
                 <h1 className="ms-2 mt-3">Cash Leaderboard</h1>
-                <table className="table table-striped w-100">
+                <table className="table w-100">
                     <thead>
                         <tr>
                             <th scope="col">Ranking</th>

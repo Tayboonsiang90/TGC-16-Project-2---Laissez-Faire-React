@@ -168,7 +168,7 @@ export default class Markets extends React.Component {
                 <React.Fragment key={politicianEntry.politician}>
                     <button
                         type="button"
-                        className={"shadow-none w-100 d-block btn btn-outline-dark" + (this.state.displayMarket === count ? " active" : "")}
+                        className={"shadow-none w-100 d-block btn btn-outline-light" + (this.state.displayMarket === count ? " active" : "")}
                         data-bs-toggle="button"
                         value={count}
                         name="displayMarket"
@@ -213,12 +213,12 @@ export default class Markets extends React.Component {
             if (this.state.timestampExpiry > new Date().getTime()) {
                 return (
                     <React.Fragment>
-                        <div className="border border-5 p-3 border-warning">
-                            <div className="mt-2 border-bottom border-warning border-5 pb-4 d-flex align-items-center justify-content-evenly">
-                                <button type="button" className={"shadow-none btn btn-outline-dark w-100" + (this.state.tradeLiquidityButton === "TRADE" ? " active" : "")} data-bs-toggle="button" name="tradeLiquidityButton" value="TRADE" onClick={this.onEventString}>
+                        <div className="border rounded-3 border-5 p-3">
+                            <div className="mt-2 border-bottom border-5 pb-4 d-flex align-items-center justify-content-evenly">
+                                <button type="button" className={"shadow-none btn btn-outline-light w-100" + (this.state.tradeLiquidityButton === "TRADE" ? " active" : "")} data-bs-toggle="button" name="tradeLiquidityButton" value="TRADE" onClick={this.onEventString}>
                                     TRADE
                                 </button>
-                                <button type="button" className={"shadow-none btn btn-outline-dark w-100" + (this.state.tradeLiquidityButton === "LIQUIDITY" ? " active" : "")} data-bs-toggle="button" name="tradeLiquidityButton" value="LIQUIDITY" onClick={this.onEventString}>
+                                <button type="button" className={"shadow-none btn btn-outline-light w-100" + (this.state.tradeLiquidityButton === "LIQUIDITY" ? " active" : "")} data-bs-toggle="button" name="tradeLiquidityButton" value="LIQUIDITY" onClick={this.onEventString}>
                                     LIQUIDITY
                                 </button>
                             </div>
@@ -229,7 +229,7 @@ export default class Markets extends React.Component {
             } else if (this.state.timestampExpiry <= new Date().getTime() && this.state.type === "open") {
                 return (
                     <React.Fragment>
-                        <div className="border border-5 p-3 border-warning">
+                        <div className="border rounded-3 border-5 p-3">
                             <h1> This market has reached settlement date and is being resolved. </h1>
                         </div>
                     </React.Fragment>
@@ -237,7 +237,7 @@ export default class Markets extends React.Component {
             } else if (this.state.timestampExpiry <= new Date().getTime() && this.state.type === "closed") {
                 return (
                     <React.Fragment>
-                        <div className="border border-5 p-3 border-warning">
+                        <div className="border border-5 p-3">
                             <h1> This market has reached settlement date and has been resolved. All contracts have been settled and paid. </h1>
                         </div>
                     </React.Fragment>
@@ -338,7 +338,7 @@ export default class Markets extends React.Component {
                 </div>
                 {/* Add Remove Liquidity */}
                 <>
-                    <div className="mt-4 border-top border-warning border-5 pt-4 d-flex align-items-center justify-content-evenly">
+                    <div className="mt-4 border-top border-5 pt-4 d-flex align-items-center justify-content-evenly">
                         <button type="button" className={"shadow-none btn btn-outline-success w-100" + (this.state.addRemoveButton === "ADD" ? " active" : "")} data-bs-toggle="button" name="addRemoveButton" value="ADD" onClick={this.onEventString}>
                             ADD
                         </button>
@@ -674,7 +674,7 @@ export default class Markets extends React.Component {
         return (
             <>
                 <React.Fragment>
-                    <div className="mt-4 border-bottom border-warning border-5 pb-4 d-flex align-items-center justify-content-evenly">
+                    <div className="mt-4 border-bottom border-5 pb-4 d-flex align-items-center justify-content-evenly">
                         <button type="button" className={"shadow-none btn btn-outline-success w-100" + (this.state.buySellButton === "BUY" ? " active" : "")} data-bs-toggle="button" name="buySellButton" value="BUY" onClick={this.onEventString}>
                             BUY
                         </button>
@@ -1072,35 +1072,37 @@ export default class Markets extends React.Component {
                         {/* Data cards of the market  */}
                         <div className="d-flex mt-4">
                             <div className="card w-100">
-                                <div className="card-body text-center">
+                                <div className="card-body style-neutral text-center">
                                     <h5>Market Ends on</h5>
                                     <p>{new Date(this.state.timestampExpiry).toDateString()}</p>
                                 </div>
                             </div>
-                            <div className="card w-100">
+                            <div className="card style-neutral w-100">
                                 <div className="card-body text-center">
                                     <h5>Volume to Date</h5>
                                     <p>${this.state.globalVolume.toFixed(2)}</p>
                                 </div>
                             </div>
-                            <div className="card w-100">
+                            <div className="card style-neutral w-100">
                                 <div className="card-body text-center">
                                     <h5>Current Liquidity</h5>
                                     <p>${this.state.globalLiquidity.toFixed(2)}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="mt-4">{this.renderPoliticianMarkets()}</div>
-                        <div className="mt-4">
+                        <div className="mt-4" id="markets">
+                            {this.renderPoliticianMarkets()}
+                        </div>
+                        <div className="mt-4 background-dark">
                             <ApexChart market_id={this.props.market_id} refreshChildChart={this.state.refreshChildChart} displayMarket={this.state.displayMarket} />
                         </div>
                         {/* Rules and Details  */}
-                        <h1 className="ms-2 mt-5">Rules and Details</h1>
-                        <p>{this.state.description}</p>
-                        <p>On expiry date, the adminstrators of Laissez Faire reserve the sole authority to judge the settlement of a market. In case of any ambiguity or uncertainty, there may be a delay in settlement.</p>
+                        <h1 className="ms-2 mt-5 background-dark">Rules and Details</h1>
+                        <p className="background-dark">{this.state.description}</p>
+                        <p className="background-dark">On expiry date, the adminstrators of Laissez Faire reserve the sole authority to judge the settlement of a market. In case of any ambiguity or uncertainty, there may be a delay in settlement.</p>
                         {/* Trade History  */}
-                        <h1 className="ms-2 mt-5">Trade History</h1>
-                        <table className="table table-striped w-100">
+                        <h1 className="ms-2 mt-5 background-dark">Trade History</h1>
+                        <table className="table w-100">
                             <thead>
                                 <tr>
                                     <th scope="col">Transaction Type</th>
@@ -1113,7 +1115,7 @@ export default class Markets extends React.Component {
                             <tbody>{this.renderTradeHistory()}</tbody>
                         </table>
                     </div>
-                    <div className="mt-5 col-12 col-lg-4">{this.renderSidebar()}</div>
+                    <div className="mt-5 col-12 col-lg-4 style-neutral">{this.renderSidebar()}</div>
                 </div>
             </>
         );

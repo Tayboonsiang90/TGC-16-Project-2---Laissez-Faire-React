@@ -105,3 +105,5 @@ Many tweaks can be thought of - pharmaceuticals development for example: Markets
 More research into using a LMSR market maker.
 
 Any further development would require regulatory approval. 
+
+

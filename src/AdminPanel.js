@@ -409,7 +409,7 @@ export default class AdminPanel extends React.Component {
         return (
             <>
                 <h1 className="ms-2 mt-5">Edit Existing Markets</h1>
-                <table className="table table-striped w-100 text-center">
+                <table className="table w-100 text-center">
                     <thead>
                         <tr>
                             <th scope="col">Position</th>
@@ -422,7 +422,7 @@ export default class AdminPanel extends React.Component {
                 </table>
                 <h1 className="ms-2 mt-5">Expired Markets Waiting for Resolution and Deletion</h1>
                 <div>
-                    <table className="table table-striped w-100 text-center">
+                    <table className="table w-100 text-center">
                         <thead>
                             <tr>
                                 <th scope="col">Position</th>

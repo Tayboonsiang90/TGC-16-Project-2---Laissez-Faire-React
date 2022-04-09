@@ -42,10 +42,10 @@ export default class Login extends React.Component {
         return (
             <>
                 <div className="mask d-flex align-items-center h-100">
-                    <div className="container h-100">
+                    <div className="container h-100 mt-4">
                         <div className="row d-flex justify-content-center align-items-center h-100">
                             <div className="col-12 col-md-9 col-lg-7 col-xl-6">
-                                <div className="card">
+                                <div className="card style-neutral">
                                     <div className="card-body p-5">
                                         <h2 className="text-uppercase text-center mb-5">Login</h2>
 
@@ -69,7 +69,7 @@ export default class Login extends React.Component {
                                                 </button>
                                             </div>
 
-                                            <p className="text-center text-muted mt-5 mb-0">
+                                            <p className="text-center mt-5 mb-0">
                                                 Don't have an account?&nbsp;
                                                 <a
                                                     href="/#"
@@ -84,10 +84,10 @@ export default class Login extends React.Component {
                                             </p>
                                             <blockquote className="blockquote text-center mt-5 mb-0">
                                                 <strong>
-                                                    <u>With great power comes great responsibility... Please do not misuse the accounts below</u>
+                                                    With great power comes great responsibility... Please do not misuse the accounts below
                                                 </strong>
                                             </blockquote>
-                                            <p className="text-center text-muted mb-0">
+                                            <p className="text-center mb-0">
                                                 Test User Account Login Details&nbsp;
                                                 <a
                                                     href="/#"
@@ -102,7 +102,7 @@ export default class Login extends React.Component {
                                                     <u>Click here</u>
                                                 </a>
                                             </p>
-                                            <p className="text-center text-muted mb-0">
+                                            <p className="text-center mb-0">
                                                 Test Admin Account Login Details&nbsp;
                                                 <a
                                                     href="/#"
