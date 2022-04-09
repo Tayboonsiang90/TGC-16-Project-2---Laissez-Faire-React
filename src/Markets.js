@@ -820,7 +820,7 @@ export default class Markets extends React.Component {
                 <div className="row">
                     {this.renderNewMarket()}
                     <React.Fragment>
-                        <div className={"col-12 align-items-stretch col-lg-6 col-xl-4 "}>
+                        <div className={"col-12 align-items-stretch col-lg-6 col-xl-4 style-success " + this.state.loading ? "d-none" : ""}>
                             <div className="card mb-3">
                                 <div className="card-body  d-flex flex-column text-center justify-content-center" style={{ minHeight: "300px" }}>
                                     <h1>Loading Market Data...</h1>
