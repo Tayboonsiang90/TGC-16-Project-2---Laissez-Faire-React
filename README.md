@@ -108,15 +108,39 @@ https://xord.com/research/curve-stableswap-a-comprehensive-mathematical-guide/
 ![alt text](./readmeImages/wireframe.png)
 The site went through several iterations of design while in production, the final wireframe is lost unfortunately.
 
-### Color Palette
+## Website structure
+There will be 8 pages.
+
+### Market
+Show a list of cards of all active prediction markets with links to trade on individual markets
+
+### Individual market trading page
+Generated dynamically, allows Buying and Selling, Liquidity tools.
+### Register
+Allows new users to signup with their email, password, birthdate, country. Automatically logs in if successful. Redirects to Market
+
+### Login
+Allows people to login with their username and password after registering. Redirects to Market if successful.
+
+### Admin Panel
+For adminstrators to perform CRUD operations on the database with a UI. 
+
+### Leaderboard
+Shows a list of users and their current ranking. 
+
+### User Dashboard
+Allows a user to deposit and withdraw money here, as well as see transaction history
+### User Portfolio
+Allows a user to see his entire portfolio here. 
+
+## Color Palette
 ![alt text](./readmeImages/colors.png)
 [Color Palette Link](https://coolors.co/101010-a0a0a0-f8f8f8-39ff14-ffff00-ff0000)
 
 The choice of color was primarily based on a dark theme, with terminal fonts coloring (neon green). (Inspired by Stackoverflow's 2022's April Fool's Terminal Filter and Razer's theme)
 
-### Technologies Used
+## Technologies Used
 
-## Used in various ways
 - HTML5
 - CSS3
 - JavaScript
@@ -158,7 +182,7 @@ The choice of color was primarily based on a dark theme, with terminal fonts col
 | 16 | Using admin privileges to Resolve and Delete any expired market  | On the Admin Panel on the navbar, under Expired Markets Waiting for Resolution and Deletion. you are able to choose from the dropdown the resolution state of any politician for that market. After choosing the correct event outcomes, click confirm submit. | The expired market should be deleted. A backup copy of the market will be saved for historical records. You can view the market by going to Markets on the navbar and under filter click "show closed markets". The market you deleted should appear in red. |
 | 17 | Using Admin Privileges to Add/Edit/Delete List of Countries (Full CRUD) | On the Admin Panel on the navbar, under Add/Edit/Delete List of Countries. Click Add New, fill in country name: AAAAA and click Confirm. Under the country dropdown, select AAAAA. Click Edit. Change the name to AABBB. Click Delete and confirm delete | After every confirmation message, there should be a alert box telling you that it is successful. |
 | 18 | Using Admin Privileges to Add/Edit/Delete List of Political Positions (Full CRUD)  |On the Admin Panel on the navbar, under Add/Edit/Delete List of Political Positions Click Add New, fill in Position name: AAAAA and click Confirm. Under the position dropdown, select AAAAA. Click Edit. Change the name to AABBB. Click Delete and confirm delete | After every confirmation message, there should be a alert box telling you that it is successful. |
-# Deployment
+## Deployment
 Hosted on Netlify free plan. To deploy, fork this code, and link your Github account with Netlify. Use the following settings: 
 
 Base directory: Not set
@@ -167,7 +191,7 @@ Build command: CI=false npm run build
 
 Publish directory: build
 
-# Dependencies
+## Dependencies
 - React Bootstrap
 - Font Awesome
 - Google Fonts
@@ -178,7 +202,7 @@ Publish directory: build
 - MongoDB
 - Cors
 
-# CREDITS AND ACKNOWLEDGMENT
+## CREDITS AND ACKNOWLEDGMENT
 - Visual Studio Code
 - Git
 - GitHub
@@ -198,7 +222,7 @@ Publish directory: build
 - And Family
 
 
-# Further Project Work
+## Further Project Work
 
 Due to the hypothetical efforts of political bad actors attempting to take down this site, hosting on IPFS and utilizing blockchain as a transaction layer will be useful future project developments. 
 
