@@ -4,8 +4,10 @@
 
 ### (French) "let people do as they choose"
 
+![alt text](./readmeImages/responsive.png)
+
 ## URL to deployed app
-https://6249dfbb20abb618c1c11a46--zesty-licorice-7fe033.netlify.app/
+https://zesty-licorice-7fe033.netlify.app/
 
 ## Summary
 
@@ -35,7 +37,7 @@ This project is hypothetical and does not involve any real money, make reference
 ## User Stories
 
 [Names taken from here.](https://en.wikipedia.org/wiki/Alice_and_Bob)
-
+## Target audience group:
 ### Journalists
 
 Alice, 35 years old is an independent journalist working in a repressive country. She has recieved a tip-off that a popular political figure in the country is involved in a large scale drug trafficking scheme. However, she knows that if she speaks up about it, she knows its likely that she would be silenced and persecuted. She would like some form of financial guarantee as a fall-back, hence she goes on Laissez Faire and create a prediction market, then buys the odds that this political figure will not win the upcoming election at $0.13 a piece. After releasing this scandal, the political figure's popularity dipped and his chances of winning dipped as a result. Alice can now happily sell the odds of this political figure not winning at $0.6 a piece.
@@ -47,6 +49,7 @@ Alice, 35 years old is an independent journalist working in a repressive country
 3. Anyone can take each side of the bet.
 4. There must be enough volume for a significant amount to be brought on either sides. (Around $20,000 as a standard (median annual pay internationally))
 
+## Target audience group:
 ### Whistleblowers
 
 Bob, 65 years old came across some documents whilst working that would incriminate his politican boss of corruption. However, he does not want to lose his job - he wants a peaceful retirement, yet he wants to tell the world. He goes on Laissez Faire and buys the odds that his politican boss's popularity opinion polls will dip next month. After whistleblowing, his boss's popularity indeed dipped. He is fired from work with a nice paycheque from Laissez Faire.
@@ -58,6 +61,7 @@ Bob, 65 years old came across some documents whilst working that would incrimina
 3. Anyone can take each side of the bet.
 4. There must be enough volume for a significant amount to be brought on either sides. (Around $20,000 as a standard (median annual pay internationally))
 
+## Target audience group:
 ### Statisticians
 
 Carol, 25 is a statistician tasked to give a forecast on the upcoming elections. However, she knows that opinion polls are notoriously historically inaccurate in her country. She decides to seek an alternative source of opinion, Laissez Faire, by checking what does the free market actually believes the chances of these politicians winning to check the accuracy of her data. (because there might be dirt on politicians that have yet to be uncovered)
@@ -67,6 +71,7 @@ Carol, 25 is a statistician tasked to give a forecast on the upcoming elections.
 1. Odds as given by the market must be easily readable and interpreted.
 2. There should be charts showing how the odds has evolved over time.
 
+## Target audience group:
 ### Yield Seekers
 
 Dan, 45 is unsatisfied by the interest on the fixed deposit account his bank gives him. He wants to earn more, but also taking on [more risk](https://academy.binance.com/en/articles/impermanent-loss-explained). He goes on Lassire Faire, choose a prediction market that he feels the odds would not shift by a lot until expiry date, and also with high volume. He buys 1 Yes and 1 No for $1 and adds liquidity to the market. He recieves 0.5% from every trade conducted until market expiry.
@@ -93,6 +98,19 @@ Dan, 45 is unsatisfied by the interest on the fixed deposit account his bank giv
 
 For more indepth details: https://research.paradigm.xyz/amm-price-impact
 https://xord.com/research/curve-stableswap-a-comprehensive-mathematical-guide/
+
+## Design
+
+### Wireframe
+
+![alt text](./readmeImages/wireframe.png)
+The site went through several iterations of design while in production, the final wireframe is lost unfortunately.
+
+### Color Palette
+![alt text](./readmeImages/colors.png)
+[Color Palette Link](https://coolors.co/101010-a0a0a0-f8f8f8-39ff14-ffff00-ff0000)
+
+The choice of color was primarily based on a dark theme, with terminal fonts coloring (neon green). (Inspired by Stackoverflow's 2022's April Fool's Terminal Filter and Razer's theme)
 
 ## Further Project Work
 
