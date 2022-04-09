@@ -4,7 +4,7 @@ import axios from "axios";
 import Chart from "react-apexcharts";
 const ApexCharts = window.ApexCharts;
 
-const API_URL = "https://project-2-express.herokuapp.com";
+const API_URL = "http://127.0.0.1:8888";
 
 export default class ApexChart extends React.Component {
     constructor(props) {

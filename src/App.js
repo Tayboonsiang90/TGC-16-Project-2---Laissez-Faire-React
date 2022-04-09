@@ -14,7 +14,7 @@ import Portfolio from "./Portfolio";
 import AdminPanel from "./AdminPanel";
 import axios from "axios";
 
-const API_URL = "https://project-2-express.herokuapp.com";
+const API_URL = "http://127.0.0.1:8888";
 
 class App extends React.Component {
     state = {

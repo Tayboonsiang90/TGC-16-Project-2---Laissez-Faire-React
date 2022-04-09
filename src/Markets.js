@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const API_URL = "https://project-2-express.herokuapp.com";
+const API_URL = "http://127.0.0.1:8888";
 
 export default class Markets extends React.Component {
     state = {
@@ -27,6 +27,7 @@ export default class Markets extends React.Component {
         createMarketPeopleField: "",
         successCreateMessage: false,
         warningCreateMessage: "",
+        loading: true,
     };
 
     //Because windows refuses to support political flags, have to use a png. to replace emojis
@@ -477,6 +478,7 @@ export default class Markets extends React.Component {
         });
         this.setState({
             openMarkets: response.data.openMarkets,
+            loading: false,
         });
     };
 
@@ -780,6 +782,15 @@ export default class Markets extends React.Component {
                 {/* Cards  */}
                 <div className="row">
                     {this.renderNewMarket()}
+                    <React.Fragment>
+                        <div className={"col-12 align-items-stretch col-lg-6 col-xl-4 " + this.state.loading ? "d-none" : ""}>
+                            <div className="card mb-3">
+                                <div className="card-body  d-flex flex-column text-center justify-content-center" style={{ minHeight: "300px" }}>
+                                    <h1>Loading Market Data...</h1>
+                                </div>
+                            </div>
+                        </div>
+                    </React.Fragment>
                     {this.renderOpenMarkets()}
                 </div>
             </>
