@@ -15,7 +15,7 @@ import Portfolio from "./Portfolio";
 import AdminPanel from "./AdminPanel";
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8888";
+const API_URL = "https://project-2-express.herokuapp.com";
 
 class App extends React.Component {
     state = {
@@ -142,7 +142,9 @@ class App extends React.Component {
         return (
             <>
                 <Navbar userSessionDetails={this.state.userSessionDetails} updateParentDisplay={this.updateParentDisplay} updateParentState={this.updateParentState} />
-                <div id="parentContainer" className="container">{this.setDisplay()}</div>
+                <div id="parentContainer" className="container">
+                    {this.setDisplay()}
+                </div>
                 <Footer />
             </>
         );

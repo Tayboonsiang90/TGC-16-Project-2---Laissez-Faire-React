@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8888";
+const API_URL = "https://project-2-express.herokuapp.com";
 
 export default class Login extends React.Component {
     state = {
@@ -83,9 +83,7 @@ export default class Login extends React.Component {
                                                 </a>
                                             </p>
                                             <blockquote className="blockquote text-center mt-5 mb-0">
-                                                <strong>
-                                                    With great power comes great responsibility... Please do not misuse the accounts below
-                                                </strong>
+                                                <strong>With great power comes great responsibility... Please do not misuse the accounts below</strong>
                                             </blockquote>
                                             <p className="text-center mb-0">
                                                 Test User Account Login Details&nbsp;
