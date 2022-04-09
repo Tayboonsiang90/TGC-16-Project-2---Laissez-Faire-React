@@ -112,7 +112,91 @@ The site went through several iterations of design while in production, the fina
 
 The choice of color was primarily based on a dark theme, with terminal fonts coloring (neon green). (Inspired by Stackoverflow's 2022's April Fool's Terminal Filter and Razer's theme)
 
-## Further Project Work
+### Technologies Used
+
+## Used in various ways
+- HTML5
+- CSS3
+- JavaScript
+- Bootstrap v5
+- React
+- Font Awesome
+- Google Fonts
+- Apexcharts
+- MongoDB
+- Axios
+- Express
+- Cors
+
+## Used in production
+- Visual Studio Code
+- Git
+- GitHub
+- Netlify
+- Heroku
+
+# TEST CASES
+| #  | Description | Steps | Expected|
+| ------------- | ------------- | ------------- | ------------- |
+| 1 | Homepage must be able to load all markets  | Load Site, wait for markets to appear | The site comes pre-loaded with several markets (Over 10) |
+| 2 | Account creation is working correctly  | Click Register on the Navbar at the top, and fill in the fields as described. Check the ToS and click register. There should be validation informing you what went wrong with your registration if there is any. Otherwise it will inform you of success. | If the account creation process is done correctly, you will be logged in automatically. Go to account details to check if your details are the same as you filled in.  |
+| 3 | Account login is working correctly  | If you came from #2, click logout on the navbar. Now click Login on the navbar. Fill in your email and password choosen in #2. | If the account login system is working correctly, you should be able to login with your email and password.  |
+| 4 | Search Filter searches through the country, the political position and the politicians correctly  | Search "Russia" | There should be 14 markets on Russia. |
+| 5 | Filter Options are working correctly | Click the various filter options   | Check against the market displayed that the filter is working correctly |
+| 6 | Market Creation is working correctly  | Under "Create Your Own Market", Choose Associate Justice, Afghanistan, Expiry Date 1/1/2023, Politician Names: Person1, Person2, Person3  | A modal should popup confirming the creation of the market. Click create. Now Search filter by Afghanistan to confirm that the market have indeed been created. |
+| 7 | Check that you can buy or sell a market | Click trade on the Afghanistan market from #4 that is green. On the right sidebar, click TRADE, BUY, NO. Buy 1000 NO shares. click confirm on the modal that pops up and remember all the parameters. After checking, SELL the 1000 NO shares. | Check if the shares have been credited on Portfolio tab in navbar, and check that the trade history appears at the bottom. Check that the market price and chart have changed correctly according to the parameters that appeared when you clicked the confirmation modal.  | 
+| 8 | Check that minting of contracts and redemption of contracts is working. 1 YES and 1 NO contract should always be equals to $1 and vice-versa | On the LIQUIDITY TAB, mint $1000 worth of tokens. Now Redeem 1000 YES and 1000 NO tokens.  | Check if $1000 have been deducted from USD balance after minting and 1000 YES and 1000 NO tokens have been credited. After redemption, everything should be reversed.  Also all actions will appear in Trade History at the bottom. |
+| 9 | Check that liquidity provision is working according to the formulae x*y=k. | Under LIQUIDITY, on the lower end of the sidebar, click ADD. Click the MAX button (You need to MINT tokens if you have none!) and then click Submit. Go through the confirmation modal and click submit. Do the same steps for redemption.  | If the algorithm is correct, you will have no nett change after following the described steps. Also all actions will appear in Trade History at the bottom. |
+| 10 | Check that Leaderboard is working  | Click Leaderboard in navbar | There should be accounts on the leaderboard, with your account highlighted in green |
+| 11 | Check that account dashboard is working | Click account details in navbar  | Your account details should be correct as shown |
+| 12 | Check that depositing and withdrawing money works  | Click DEPOSIT and put 10,000. Now click WITHDRAW and put 10,000. | Your balance should increment by 10,000 after the deposit and decrement by 10,000 after the withdrawal. If you attempt to withdraw more than what you own, an error message will be shown. Your transaction history will be shown at the bottom of the page.
+| 13 | Check that the portfolio is working | Click portfolio at the navbar on top.  | Check if the balances of Yes tokens, No tokens and Liquidity % matches your purchases that you have done in various markets. If you click trade on the rightmost column, it should bring you to the correct market.  |
+| 14 | Check that the admin panel is working | Click Logout on the top if you are logged in, and click Login. On the login page, Click Test Admin Account Login Details to autofill test admin account details. Login and go to Admin Panel on the navbar.  | The admin panel should load. |
+| 15 | Using admin privileges to Edit any existing market | On the Admin Panel on the navbar, under Edit Existing Markets, click edit on any choosen market. Change the fields to your liking, and change the expiry date to a day before today. Click Confirm Edit. | The market should update instantly, and if the date change is carried out, it will appear under Expired Markets Waiting for Resolution and Deletion  |
+| 16 | Using admin privileges to Resolve and Delete any expired market  | On the Admin Panel on the navbar, under Expired Markets Waiting for Resolution and Deletion. you are able to choose from the dropdown the resolution state of any politician for that market. After choosing the correct event outcomes, click confirm submit. | The expired market should be deleted. A backup copy of the market will be saved for historical records. You can view the market by going to Markets on the navbar and under filter click "show closed markets". The market you deleted should appear in red. |
+| 17 | Using Admin Privileges to Add/Edit/Delete List of Countries (Full CRUD) | On the Admin Panel on the navbar, under Add/Edit/Delete List of Countries. Click Add New, fill in country name: AAAAA and click Confirm. Under the country dropdown, select AAAAA. Click Edit. Change the name to AABBB. Click Delete and confirm delete | After every confirmation message, there should be a alert box telling you that it is successful. |
+| 18 | Using Admin Privileges to Add/Edit/Delete List of Political Positions (Full CRUD)  |On the Admin Panel on the navbar, under Add/Edit/Delete List of Political Positions Click Add New, fill in Position name: AAAAA and click Confirm. Under the position dropdown, select AAAAA. Click Edit. Change the name to AABBB. Click Delete and confirm delete | After every confirmation message, there should be a alert box telling you that it is successful. |
+# Deployment
+Hosted on Netlify free plan. To deploy, fork this code, and link your Github account with Netlify. Use the following settings: 
+
+Base directory: Not set
+
+Build command: CI=false npm run build
+
+Publish directory: build
+
+# Dependencies
+- React Bootstrap
+- Font Awesome
+- Google Fonts
+- Apex Charts
+- Axios
+- Express
+- Dot Env
+- MongoDB
+- Cors
+
+# CREDITS AND ACKNOWLEDGMENT
+- Visual Studio Code
+- Git
+- GitHub
+- Netlify
+- HTML5
+- CSS3
+- JavaScript
+- Bootstrap v5
+- Font Awesome
+- Google Fonts
+- Leaflet
+- Leaflet Marker Clustering
+- Apex Charts
+- Axios
+- Last but not least, Trent Global College and their excellent teacher, Paul.
+- Also my wife.
+- And Family
+
+
+# Further Project Work
 
 Due to the hypothetical efforts of political bad actors attempting to take down this site, hosting on IPFS and utilizing blockchain as a transaction layer will be useful future project developments. 
 
