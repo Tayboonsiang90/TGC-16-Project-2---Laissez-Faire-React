@@ -17,7 +17,7 @@ export default class Markets extends React.Component {
         volumeGreater: 0,
         volumeLesser: 0,
         ascendDescend: 0, //0. Descending, 1. Ascending
-        marketType: [0, 1], //0,1,2 (Open, Resolving, Closed)
+        marketType: [0], //0,1,2 (Open, Resolving, Closed)
         search: "",
         createMarketCountry: "Country",
         createMarketPosition: "Position",
@@ -493,21 +493,56 @@ export default class Markets extends React.Component {
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active"></button>
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
+                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"></button>
+                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4"></button>
                     </div>
                     <div className="carousel-inner " style={{ maxHeight: "400px" }}>
-                        <div className="carousel-item position-relative active">
-                            <img src="https://http.cat/400" className="d-block w-100" alt="Meaningful Text"></img>
-                            <div className="position-absolute top-50 start-50 translate-middle text-center w-100" style={{ background: "rgba(0, 0, 0, 0.65)", color: "rgba(247,147,26)" }}>
-                                <h1>Laissez Faire</h1>
-                                <p>'let the people do'</p>
-                                <h5>Binary Political Prediction Markets</h5>
+                        <div className="carousel-item position-relative active" id="carousel-1">
+                            <div className="position-absolute top-50 start-50 translate-middle text-center w-100 px-5">
+                                <h1 style={{ fontSize: "3.5em" }}>LAISSEZ FAIRE</h1>
+                                <h2 className="mt-5">
+                                    <i class="fa-solid fa-quote-left"></i>let the people do<i class="fa-solid fa-quote-right"></i>
+                                </h2>
+                                <p className="mt-5">
+                                    <i class="fa-solid fa-arrow-right"></i> For more information <i class="fa-solid fa-arrow-right"></i>
+                                </p>
                             </div>
                         </div>
-                        <div className="carousel-item">
-                            <img src="https://http.cat/102" className="d-block w-100" alt="Meaningful Text"></img>
+                        <div className="carousel-item" id="carousel-2">
+                            <div className="position-absolute top-50 start-50 translate-middle text-center w-100 px-5">
+                                <h1>BET ON YOUR BELIEFS</h1>
+                                <p className="mt-5">
+                                    Laissez Faire is a politicial binary options markets,
+                                    <br></br> where anyone can create markets on political events at specified dates
+                                    <br></br>and anyone can bet on these markets.
+                                </p>
+                                <p className="mt-5">
+                                    Each market consists of two contracts, Yes and No.
+                                    <br></br>A contract will pay <i class="fa-solid fa-dollar-sign"></i>1 if it comes true, and <i class="fa-solid fa-dollar-sign"></i>0 if it comes false.
+                                </p>
+                            </div>
                         </div>
-                        <div className="carousel-item">
-                            <img src="https://http.cat/100" className="d-block w-100" alt="Meaningful Text"></img>
+
+                        <div className="carousel-item" id="carousel-3">
+                            <div className="position-absolute top-50 start-50 translate-middle text-center w-100 px-5">
+                                <img src="https://cdn-images-1.medium.com/max/632/1*40cKvzduEd2MkeKqq1elJA.png" alt="hi"></img>
+                                <img className="ms-5" src="https://cdn-images-1.medium.com/max/627/1*AFAt77NPAEyt5NcDx_qG9g.png" alt="hi"></img>
+                            </div>
+                        </div>
+                        <div className="carousel-item" id="carousel-4">
+                            <div className="position-absolute top-50 start-50 translate-middle text-center w-100 px-5">
+                                <h1>Market Maker</h1>
+                                <p className="mt-5">
+                                    Laissez Faire uses the constant product AMM, x * y = k, constrained on price(x) + price(y) = $1,
+                                    <br></br> democratizing the provision of liquidity and ensuring that there is always liquidity to meet 24h demand.
+                                </p>
+                                <p className="mt-5">If you are a yield seeker, add liquidity to a market to earn a share of the trading fees!</p>
+                            </div>
+                        </div>
+                        <div className="carousel-item" id="carousel-5">
+                            <div className="position-absolute top-50 start-50 translate-middle text-center w-100 px-5">
+                                <img src="https://cloudfront-us-east-1.images.arcpublishing.com/coindesk/2JYSUKBZKJDLPAOVBQT2EH2IHI.png" alt="hi"></img>
+                            </div>
                         </div>
                     </div>
                     <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">

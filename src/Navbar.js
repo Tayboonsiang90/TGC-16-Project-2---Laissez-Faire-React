@@ -10,7 +10,7 @@ export default class Navbar extends React.Component {
         if (!this.props.userSessionDetails._id) {
             return (
                 <>
-                    <li className="nav-item">
+                    <li className="nav-item d-flex align-items-center">
                         <div
                             className="btn btn-outline-dark w-100 mb-1 border-0"
                             onClick={() => {
@@ -21,7 +21,7 @@ export default class Navbar extends React.Component {
                             &nbsp; Register
                         </div>
                     </li>
-                    <li className="nav-item">
+                    <li className="nav-item d-flex align-items-center">
                         <div
                             className="btn btn-outline-dark w-100 mb-1 border-0"
                             onClick={() => {
@@ -36,13 +36,13 @@ export default class Navbar extends React.Component {
         } else {
             return (
                 <>
-                    <li className="nav-item">
+                    <li className="nav-item d-flex align-items-center">
                         <span className="btn btn-outline-dark w-100 mb-1 border-0 disabled">
                             <i className="fa-solid fa-envelope"></i>
                             &nbsp;{this.props.userSessionDetails.email}
                         </span>
                     </li>
-                    <li className="nav-item">
+                    <li className="nav-item d-flex align-items-center">
                         <span className="btn btn-outline-dark w-100 mb-1 border-0 disabled">
                             <i className="fa-solid fa-dollar-sign"></i>
                             &nbsp;Available Balance: $
@@ -52,7 +52,7 @@ export default class Navbar extends React.Component {
                             })}
                         </span>
                     </li>
-                    <li className="nav-item">
+                    <li className="nav-item d-flex align-items-center">
                         <div
                             className="btn btn-outline-dark w-100 mb-1 border-0"
                             onClick={() => {
@@ -62,7 +62,7 @@ export default class Navbar extends React.Component {
                             <i className="fa-solid fa-circle-info"></i>&nbsp;Account Details
                         </div>
                     </li>
-                    <li className="nav-item">
+                    <li className="nav-item d-flex align-items-center">
                         <div
                             className="btn btn-outline-dark w-100 mb-1 border-0"
                             onClick={() => {
@@ -76,7 +76,7 @@ export default class Navbar extends React.Component {
                     {(() => {
                         if (this.props.userSessionDetails._id === "624d05441e16550f5b098375") {
                             return (
-                                <li className="nav-item">
+                                <li className="nav-item d-flex align-items-center">
                                     <div
                                         className="btn btn-outline-dark w-100 mb-1 border-0"
                                         onClick={() => {
@@ -89,7 +89,7 @@ export default class Navbar extends React.Component {
                             );
                         }
                     })()}
-                    <li className="nav-item">
+                    <li className="nav-item d-flex align-items-center">
                         <div className="btn btn-outline-dark w-100 mb-1 border-0" onClick={this.logoutButton}>
                             <i className="fa-solid fa-arrow-right-from-bracket"></i>&nbsp;Logout
                         </div>
@@ -124,8 +124,8 @@ export default class Navbar extends React.Component {
                         <span className="navbar-toggler-icon"></span>
                     </button>
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li className="nav-item">
+                        <ul className="navbar-nav me-auto mb-2 mb-lg-0 d-flex">
+                            <li className="nav-item d-flex align-items-center">
                                 <div
                                     className="btn btn-outline-dark w-100 mb-1 border-0"
                                     onClick={() => {
@@ -136,7 +136,7 @@ export default class Navbar extends React.Component {
                                     &nbsp;Markets
                                 </div>
                             </li>
-                            <li className="nav-item">
+                            <li className="nav-item d-flex align-items-center">
                                 <div
                                     className="btn btn-outline-dark w-100 mb-1 border-0"
                                     onClick={() => {

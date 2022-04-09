@@ -1,7 +1,3 @@
-.debug {
-    border: 1px solid red;
-}
-
 /* Tooltip container */
 .tooltipHTML {
     position: relative;
@@ -35,6 +31,10 @@
     visibility: visible;
 }
 
+.apexcharts-tooltip {
+    color: #101010;
+}
+
 /* Fanciest Font*/
 .fancy {
     font-family: "Roboto", sans-serif;
@@ -48,16 +48,3 @@ nav > div > i:hover {
 nav > div > i {
     cursor: pointer;
 }
-
-#parent {
-    position: relative;
-}
-
-canvas {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-

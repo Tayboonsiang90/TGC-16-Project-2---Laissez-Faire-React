@@ -46,6 +46,12 @@ export default class ApexChart extends React.Component {
                         color: "#F8F8F8",
                     },
                 },
+                tooltip: {
+                    x: {
+                        show: true,
+                        format: "hh:mm tt dd MMM",
+                    },
+                },
                 //Data Labels are labels with value on the chart
                 dataLabels: {
                     enabled: false,
@@ -69,9 +75,9 @@ export default class ApexChart extends React.Component {
                 xaxis: {
                     type: "datetime",
                     labels: {
+                        format: "hh:mm tt dd MMM",
                         style: {
                             fontFamily: "Source Code Pro, monospace",
-                            datetimeUTC: false,
                             colors: "#F8F8F8",
                         },
                     },
