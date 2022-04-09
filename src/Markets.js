@@ -27,7 +27,7 @@ export default class Markets extends React.Component {
         createMarketPeopleField: "",
         successCreateMessage: false,
         warningCreateMessage: "",
-        loading: true,
+        loading: false,
     };
 
     //Because windows refuses to support political flags, have to use a png. to replace emojis
@@ -460,6 +460,7 @@ export default class Markets extends React.Component {
         let response3 = await axios.get(API_URL + "/position");
         this.setState({
             positionList: response3.data.positionArray,
+            loading: true,
         });
     }
 
@@ -480,7 +481,6 @@ export default class Markets extends React.Component {
         });
         this.setState({
             openMarkets: response.data.openMarkets,
-            loading: false,
         });
     };
 
